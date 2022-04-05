@@ -127,7 +127,17 @@ export default function WaveApp(props: WaveAppProps)
       <canvas ref={canvasRef} id='WaveApp'>
         This text is displayed if your browser does not support HTML5 Canvas.
       </canvas>
-      <audio src="./Waves-sound-effect.mp3" controls autoPlay loop></audio>
+      {/* <audio src="https://github.com/k123s456h/web-artwork/raw/main/public/Waves-sound-effect.mp3" controls autoPlay loop>
+        <p>
+        Audio file from here:
+
+        Hello,
+        Stock audio - Free sound effects, loops and music.
+        There are no hidden costs or need to sign-up. 
+        Licence: The sound effect is permitted for commercial use under license Creative Commons Attribution 4.0 International License
+        http://www.orangefreesounds.com/ 
+        </p>
+      </audio> */}
     </div>
   );
 }
