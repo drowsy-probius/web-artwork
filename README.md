@@ -1,8 +1,8 @@
 ## Demo pages
 
-(Wave)[https://k123s456h.github.io/web-artwork/wave]
+[Wave](https://k123s456h.github.io/web-artwork/wave)
 
-(Wave react typescript)[https://k123s456h.github.io/web-artwork/wave-react-typescript]
+[Wave react typescript (build failure. not working now)](https://k123s456h.github.io/web-artwork/wave-react-typescript)
 
 
 
