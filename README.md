@@ -2,7 +2,7 @@
 
 [Wave](https://k123s456h.github.io/web-artwork/wave)
 
-[Wave react typescript (build failure. not working now)](https://k123s456h.github.io/web-artwork/wave-react-typescript)
+[Wave react typescript](http:/45.62.229.112:3000)
 
 
 
