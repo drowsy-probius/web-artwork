@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Wave example</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+</head>
+
+<body>
+  <script type="module" src='./main.js'></script>
+  <audio style="position: fixed;  right: 0;  bottom: 0;  height: 30px;  width: 300px;" controls id="wave-sound" autoplay loop>
+    <source src="./Waves-sound-effect.mp3" type="audio/mpeg">
+    <p>
+    Audio file from here:
+
+    Hello,
+    Stock audio - Free sound effects, loops and music.
+    There are no hidden costs or need to sign-up. 
+    Licence: The sound effect is permitted for commercial use under license Creative Commons Attribution 4.0 International License
+    http://www.orangefreesounds.com/ 
+    </p>
+  </audio>
+</body>
+
+
+<script>
+  (()=>{
+    console.log(1);
+    document.getElementById('wave-sound').volume = 0.07;
+  })();
+</script>
+
+<script>
+  (()=>{
+    var script = document.createElement('script'); 
+    script.onload = function () { 
+      var stats = new Stats(); 
+      document.body.appendChild(stats.dom); 
+      requestAnimationFrame(function loop() { stats.update(); requestAnimationFrame(loop) }); 
+    }; 
+    script.src = 'http://mrdoob.github.io/stats.js/build/stats.min.js'; 
+    document.head.appendChild(script); 
+  })();
+</script>
+<style>
+  * {
+    outline: 0;
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    width: 100%;
+    height: 100%;
+  }
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+</html>
