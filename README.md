@@ -4,8 +4,12 @@
 
 [Wave react typescript](http:/45.62.229.112:3000)
 
+### TODO
 
-# libraries
+윈도우 창 크기가 변경 될 때마다 프레임이 이상하게 변경됨.
+
+
+## libraries
 
 for 2D graphics: [PixiJS](https://pixijs.com)
 
