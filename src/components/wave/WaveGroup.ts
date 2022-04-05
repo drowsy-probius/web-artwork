@@ -1,4 +1,4 @@
-import { Coordinate, CoordinateApp } from "../../@types";
+import { Coordinate } from "../../@types";
 import Wave from "./Wave";
 import WaveRectangle from "./WaveRectangle";
 
@@ -10,9 +10,10 @@ export default class WaveGroup {
   waves: Array<Wave | WaveRectangle>;
   boatWaveIdx: number;
 
-  constructor(windowSize: Coordinate, numberOfPointsPerWave=5, numberOfWaves=5, color='#42bff530')
+  constructor(windowSize: Coordinate, numberOfPointsPerWave=5, numberOfWaves=5, color='#42bff525')
   {
     console.log(`numberOfPointsPerWave= ${numberOfPointsPerWave}`);
+    console.log(`numberOfWaves= ${numberOfWaves}`);
     this.windowSize = windowSize;
     this.color = color;
     this.numberOfWaves = numberOfWaves;
@@ -39,13 +40,12 @@ export default class WaveGroup {
     this.waves.forEach(wave => {
       wave.resize(size);
     });
-    return this;
   }
 
-  draw(context: CanvasRenderingContext2D)
+  draw(context: CanvasRenderingContext2D, windowSize: Coordinate, timedelta=0.005)
   {
     this.waves.forEach(wave => {
-      wave.draw(context);
+      wave.draw(context, windowSize, timedelta);
     });
   }
 }

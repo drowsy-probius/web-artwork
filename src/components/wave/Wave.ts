@@ -4,29 +4,24 @@ import { Coordinate, CoordinateApp } from "../../@types";
 export default class Wave {
   color: string;
   numberOfPoints: number;
-
   stageSize: Coordinate | undefined;
-
   points: Array<Point> | undefined;
   pointGap: number | undefined;
-
   surfaces: Array<Coordinate> | undefined;
   center: Coordinate | undefined;
-
   gradient: Array<number> | undefined;
-  
 
   constructor(windowSize:Coordinate, color: string, numberOfPoints: number)
   {
     this.color = color;
-    this.numberOfPoints = numberOfPoints;
+    this.numberOfPoints = numberOfPoints+1;
     this.resize(windowSize);
   }
 
   resize(stageSize: Coordinate)
   {
     this.stageSize = stageSize;
-    this.center = new CoordinateApp(stageSize).multiply(1);
+    this.center = new CoordinateApp(stageSize).multiply(2/3);
 
     this.pointGap = stageSize.x / (this.numberOfPoints - 1);
     this.gradient = [];
@@ -37,20 +32,27 @@ export default class Wave {
 
   init()
   {
-    if(!this.pointGap || !this.center) return;
+    if(!this.pointGap || !this.center || !this.stageSize) return;
+
+    let pointGap = this.pointGap;
+    let centerPoint: Coordinate = this.center;
 
     let pointArray: Array<Point> = [];
-    for(let i=0; i<this.numberOfPoints; i++)
+    for(let i=0; i<this.numberOfPoints-1; i++)
     {
       pointArray[i] = new Point(i, {
-        x: this.pointGap * i,
-        y: this.center.y
+        x: pointGap * i,
+        y: centerPoint.y
       });
     }
+    pointArray[pointArray.length] = new Point(pointArray.length, {
+      x: this.stageSize.x,
+      y: centerPoint.y
+    })
     this.points = [...pointArray];
   }
 
-  draw(context: CanvasRenderingContext2D)
+  draw(context: CanvasRenderingContext2D, windowSize: Coordinate, timedelta: number)
   {
     if(!this.points || !this.stageSize) return;
 
@@ -60,7 +62,6 @@ export default class Wave {
       return;
     }
     
-    context.setTransform(1, 0, 0, 1, 0, 0);
     context.beginPath();
     context.fillStyle = this.color;
 
@@ -76,24 +77,28 @@ export default class Wave {
         y: prev.y + point.coord.y
       }).multiply(0.5);
 
+      // wave point paint for debug
+      // context.fillStyle = '#33ff00';
+      // context.fillRect(current.x, current.y, 3, 3);
+      // context.fillStyle = this.color;
+
       context.quadraticCurveTo(prev.x, prev.y, current.x, current.y);
-
-      this.gradient[index] = (current.x - prev.x) === 0 ? (current.y - prev.y) : (current.y - prev.y) / (current.x - prev.x);
-      this.surfaces[index] = current;
-
       prev = point.coord;
 
+      this.gradient[index] = (current.x - prev.x) === 0 ? 0 : (current.y - prev.y) / (current.x - prev.x);
+      this.surfaces[index] = current;
 
       if(index !== 0 && index !== points.length - 1)
       {
-        point.update();
+        point.update(timedelta);
       }
+
     });
 
-    context.lineTo(prev.x, prev.y);
-    context.lineTo(this.stageSize.x, this.stageSize.y);
-    context.lineTo(0, this.stageSize.y);
-    context.lineTo(this.points[0].coord.x, this.points[0].coord.y);
+    context.lineTo(prev.x, prev.y); // create line to last point
+    context.lineTo(windowSize.x, windowSize.y); // to right bottom
+    context.lineTo(0, windowSize.y); // to left bottom
+    //context.lineTo(this.points[0].coord.x, this.points[0].coord.y);
 
     context.fill();
     // context.stroke(); // 윤곽선 칠하기

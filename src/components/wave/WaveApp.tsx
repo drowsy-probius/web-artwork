@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-
+import React, { useEffect, useRef, useState } from 'react';
 import { WindowSize, Coordinate } from '../../@types';
-
 import WaveGroup from './WaveGroup';
+
+import Stats from 'stats.js'
 
 interface WaveAppProps {
   windowSize: WindowSize,
@@ -13,9 +13,9 @@ interface Star{
   size: number
 }
 
-
-export default function WaveApp(props: WaveAppProps, )
+export default function WaveApp(props: WaveAppProps)
 {
+  const stats = new Stats();
   const windowSize = props.windowSize;
   const requestAnimationFrameRef = useRef(requestAnimationFrame(animate));
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,6 +24,8 @@ export default function WaveApp(props: WaveAppProps, )
     y: windowSize.height
   }, 5));
   const [stars, setStars] = useState<Array<Star>>([]);
+
+  document.body.appendChild(stats.dom);
 
   useEffect(()=>{
     const canvas = canvasRef.current;
@@ -37,14 +39,18 @@ export default function WaveApp(props: WaveAppProps, )
 
     makeStars(windowSize);
 
-    context.scale(2, 2);
+    context.scale(1, 1);
     context.fillStyle = '#000000';
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
-    waveGroupRef.current = new WaveGroup({
-      x: windowSize.width,
-      y: windowSize.height
-    }, Math.floor(canvas.width/200));
+    // waveGroupRef.current = new WaveGroup({
+    //   x: windowSize.width,
+    //   y: windowSize.height
+    // }, Math.floor(canvas.width/200));
+    waveGroupRef.current.resize({
+      x:windowSize.width,
+      y:windowSize.height
+    })
 
     return () => {
       cancelAnimationFrame(requestAnimationFrameRef.current);
@@ -54,19 +60,23 @@ export default function WaveApp(props: WaveAppProps, )
 
   function animate(timestamp: number)
   {
+    stats.begin();
+
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     if(!canvas || !context) return;
     const waveGroup = waveGroupRef.current;
 
-    // console.log('animate function called');
-
     context.clearRect(0, 0, windowSize.width, windowSize.height);
     drawBackground(context);
-    drawStars(context, (timestamp / 700) * Math.PI/180);
+    drawStars(context, -(timestamp / 1000) * Math.PI/180);
 
-    waveGroup.draw(context);
+    waveGroup.draw(context, {
+      x: windowSize.width,
+      y: windowSize.height
+    });
 
+    stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
   }
 
@@ -98,16 +108,18 @@ export default function WaveApp(props: WaveAppProps, )
     console.log(`number of stars: ${numberOfStars}`);
   }
 
-  function drawStars(context: CanvasRenderingContext2D, angle: number)
+  function drawStars(context: CanvasRenderingContext2D, radian: number)
   {
-    context.rotate(angle);
+    context.save();
+    context.rotate(radian);
     context.translate(-windowSize.width, -windowSize.height);
     context.fillStyle = "#bfb900";
     stars.forEach(s => {
       context.fillRect(s.coord.x, s.coord.y, s.size, s.size);
     });
     // Reset transformation matrix to the identity matrix
-    context.setTransform(1, 0, 0, 1, 0, 0);
+    // context.setTransform(1, 0, 0, 1, 0, 0);
+    context.restore();
   }
 
   return (
@@ -115,6 +127,7 @@ export default function WaveApp(props: WaveAppProps, )
       <canvas ref={canvasRef} id='WaveApp'>
         This text is displayed if your browser does not support HTML5 Canvas.
       </canvas>
+      <audio src="./Waves-sound-effect.mp3" controls autoPlay loop></audio>
     </div>
   );
 }

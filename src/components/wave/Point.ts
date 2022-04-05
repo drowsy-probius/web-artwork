@@ -2,21 +2,19 @@ import { Coordinate } from "../../@types";
 
 export default class Point {
   coord: Coordinate;
-  speed: number;
   cur: number;
   max: number;
 
-  constructor(index: number, coord: Coordinate)
+  constructor(index: number, coord: Coordinate, max=0.1)
   {
     this.coord = coord;
-    this.speed = 0.1;
     this.cur = index;
-    this.max = Math.random() * 10;
+    this.max = Math.random() * max;
   }
 
-  update()
+  update(speed: number)
   {
-    this.cur += Math.random() * this.speed;
+    this.cur += Math.random() * speed;
     this.coord.y += Math.sin(this.cur) * this.max;
   }
 }

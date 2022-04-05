@@ -8,7 +8,7 @@ export class CoordinateApp {
 
   constructor(coord: Coordinate)
   {
-    this.coord = coord;
+    this.coord = {...coord};
   }
 
   multiply(weight: number|Coordinate)
