@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {BrowserRouter, Link, Routes, Route} from 'react-router-dom';
 
-import WaveApp from './components/wave/WaveApp';
+import WaveApp from './components/WaveApp/WaveApp';
 
 import { WindowSize } from './@types';
 
