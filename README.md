@@ -1,8 +1,11 @@
 ## Demo pages
 
-[Web Artworks](http:/45.62.229.112:3000) 상단에 메뉴있음.
+- [Web Artworks](http:/45.62.229.112:3000)
+상단에 메뉴있음.
 
-[Wave static page](https://k123s456h.github.io/web-artwork/wave)
+- [Wave static page](https://k123s456h.github.io/web-artwork/wave)
+javascript로만 작성한 wave 페이지
+
 
 ### TODO
 
