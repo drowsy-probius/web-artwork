@@ -5,6 +5,12 @@
 [Wave react typescript](http:/45.62.229.112:3000)
 
 
+# libraries
+
+for 2D graphics: [PixiJS](https://pixijs.com)
+
+for 3D graphics: [three.js](https://threejs.org)
+
 
 
 ```
