@@ -25,7 +25,7 @@ export default function WaveApp(props: WaveAppProps)
   }, 5));
   const [stars, setStars] = useState<Array<Star>>([]);
 
-  document.body.appendChild(stats.dom);
+  document.getElementById('performance-stats')?.appendChild(stats.dom);
 
   useEffect(()=>{
     const canvas = canvasRef.current;
@@ -127,6 +127,9 @@ export default function WaveApp(props: WaveAppProps)
       <canvas ref={canvasRef} id='WaveApp'>
         This text is displayed if your browser does not support HTML5 Canvas.
       </canvas>
+      <div id='performance-stats'>
+
+      </div>
       {/* <audio src="https://github.com/k123s456h/web-artwork/raw/main/public/Waves-sound-effect.mp3" controls autoPlay loop>
         <p>
         Audio file from here:
