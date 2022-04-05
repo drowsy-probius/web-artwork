@@ -5,17 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      // 다른 터미널에서 npm run start:debug 한 뒤에 연결
+      "name": "Launch Chrome",
       "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "program": "${workspaceFolder}/src/App.tsx",
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/src"
     }
   ]
 }

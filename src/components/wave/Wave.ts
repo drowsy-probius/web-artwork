@@ -26,9 +26,11 @@ export default class Wave {
   resize(stageSize: Coordinate)
   {
     this.stageSize = stageSize;
-    this.center = new CoordinateApp(stageSize).multiply(1.5);
+    this.center = new CoordinateApp(stageSize).multiply(1);
 
     this.pointGap = stageSize.x / (this.numberOfPoints - 1);
+    this.gradient = [];
+    this.surfaces = [];
 
     this.init();
   }
@@ -57,15 +59,17 @@ export default class Wave {
       console.log('no points');
       return;
     }
-
+    
+    context.setTransform(1, 0, 0, 1, 0, 0);
     context.beginPath();
+    context.fillStyle = this.color;
 
     let prev: Coordinate = this.points[0].coord;
     
     context.moveTo(prev.x, prev.y);
 
-    this.points.forEach((point, index) => {
-      if(!this.points || !this.gradient || !this.surfaces) return;
+    this.points.forEach((point, index, points) => {
+      if(!this.gradient || !this.surfaces) return;
 
       let current: Coordinate = new CoordinateApp({
         x: prev.x + point.coord.x,
@@ -73,12 +77,14 @@ export default class Wave {
       }).multiply(0.5);
 
       context.quadraticCurveTo(prev.x, prev.y, current.x, current.y);
-      this.gradient[index] = (current.y - prev.y) / (current.x - prev.x);
+
+      this.gradient[index] = (current.x - prev.x) === 0 ? (current.y - prev.y) : (current.y - prev.y) / (current.x - prev.x);
       this.surfaces[index] = current;
 
       prev = point.coord;
 
-      if(index !== 0 && index !== this.points.length - 1)
+
+      if(index !== 0 && index !== points.length - 1)
       {
         point.update();
       }
@@ -89,7 +95,6 @@ export default class Wave {
     context.lineTo(0, this.stageSize.y);
     context.lineTo(this.points[0].coord.x, this.points[0].coord.y);
 
-    context.fillStyle = this.color;
     context.fill();
     // context.stroke(); // 윤곽선 칠하기
     // context.closePath(); // fill하면 자동으로 closePath됨

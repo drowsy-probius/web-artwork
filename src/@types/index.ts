@@ -11,18 +11,34 @@ export class CoordinateApp {
     this.coord = coord;
   }
 
-  multiply(weight: number)
+  multiply(weight: number|Coordinate)
   {
-    this.coord.x *= weight;
-    this.coord.y *= weight;
+    if(typeof(weight) === "number" )
+    {
+      this.coord.x *= weight;
+      this.coord.y *= weight;
+    }
+    else
+    {
+      this.coord.x *= weight.x;
+      this.coord.y *= weight.y;
+    }
 
     return this.coord;
   }
 
-  add(weight: number)
+  add(weight: number|Coordinate)
   {
-    this.coord.x += weight;
-    this.coord.y += weight;
+    if(typeof(weight) === "number" )
+    {
+      this.coord.x += weight;
+      this.coord.y += weight;
+    }
+    else
+    {
+      this.coord.x += weight.x;
+      this.coord.y += weight.y;
+    }
 
     return this.coord;
   }

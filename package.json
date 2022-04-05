@@ -2,6 +2,7 @@
   "name": "web-artwork",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
@@ -21,7 +22,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:dev": "react-scripts start --watch",
+    "start:dev": "react-scripts start --watch --inspect",
+    "start:debug": "BROWSER=none react-scripts start --watch --inspect",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
