@@ -1,8 +1,8 @@
 ## Demo pages
 
-[Wave](https://k123s456h.github.io/web-artwork/wave)
+[Web Artworks](http:/45.62.229.112:3000) 상단에 메뉴있음.
 
-[Wave react typescript](http:/45.62.229.112:3000/wave)
+[Wave static page](https://k123s456h.github.io/web-artwork/wave)
 
 ### TODO
 
