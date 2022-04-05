@@ -2,7 +2,7 @@
 
 [Wave](https://k123s456h.github.io/web-artwork/wave)
 
-[Wave react typescript](http:/45.62.229.112:3000)
+[Wave react typescript](http:/45.62.229.112:3000/wave)
 
 ### TODO
 
