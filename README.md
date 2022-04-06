@@ -1,6 +1,6 @@
 ## Demo pages
 
-- [Web Artworks](http:/45.62.229.112:3000)
+- [Web Artworks](http://papago.duckdns.org:3000)
 
 상단에 메뉴있음.
 
