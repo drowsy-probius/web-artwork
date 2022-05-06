@@ -13,3 +13,6 @@
 - 별 재생성
 - WaveGroup 재생성
 - Rectangle 만들 포지션 정하기
+
+## 디버깅?
+vscode에서 실행하고 breakpoint걸면서 확인 가능
