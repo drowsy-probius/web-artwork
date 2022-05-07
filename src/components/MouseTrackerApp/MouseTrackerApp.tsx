@@ -4,7 +4,7 @@ import { useCanvas } from "../useCanvas";
 
 import Stats from 'stats.js';
 import CircleGroup from "./CircleGroup";
-import { interpolateColor } from "../../functions";
+import { interpolateColor, isPositionPositive } from "../../functions";
 
 interface MouseTrackerAppProps{
   windowSize: WindowSize
@@ -31,8 +31,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
    * rendering되지 않도록 useState가 아니라 useRef을 사용함. 
    * FIFO queue
    */
-  const MaxRecentPoints = 100;
-  const TimeLimitRecentPoints = 600;
+  const MaxRecentPoints = 300;
+  const TimeLimitRecentPoints = 800;
   const recentPoints = useRef<RecentPoint[]>([]);
 
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
@@ -94,9 +94,23 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const context = canvas?.getContext('2d');
     if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
-    CircleGroupRef.current.draw(context, mousePosition.current);
+    context.fillStyle = '#16202e';
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+    // CircleGroupRef.current.draw(context, mousePosition.current);
+    if(!mouseLeft.current)
+    {
+      context.save();
+      context.filter = 'blur(10px)';
+      context.beginPath();
+      context.fillStyle = '#f0ffdb';
+      context.arc(mousePosition.current.x, mousePosition.current.y, 40, 0, 2*Math.PI);
+      context.fill();
+      context.restore();
+    }
+
     drawRecentPoints(context);
 
     stats.end();
@@ -111,22 +125,22 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     context.globalCompositeOperation = 'source-over';
 
     const colorFrom = '#075bedff';
-    const colorTo = '#d6e5ff0f';
+    const colorTo = '#d6e5ff00';
     const now = Date.now();
 
     const points = recentPoints.current;
 
     for(let i=0; i<points.length - 1; i++)
     {
-      if(mouseLeft.current || now - points[i].timestamp > TimeLimitRecentPoints || 
+      if(now - points[i].timestamp > TimeLimitRecentPoints || 
         points[i].x < 0 || points[i].y < 0)
       {
         // recentPoints.current = [];
-        break;
+        continue;
       }
 
       const colorStart = interpolateColor(colorFrom, colorTo, i/points.length);
-      const colorEnd = interpolateColor(colorFrom, colorTo, i+1/points.length);
+      const colorEnd = interpolateColor(colorFrom, colorTo, (i+1)/points.length);
 
       const gradient = context.createLinearGradient(
         points[i].x, points[i].y,
@@ -137,6 +151,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
       const path = new Path2D();
       context.strokeStyle = gradient;
+      context.lineWidth = 3;
       path.moveTo(points[i].x, points[i].y);
       path.lineTo(points[i+1].x, points[i+1].y);
       context.stroke(path);

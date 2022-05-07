@@ -51,8 +51,8 @@ export class Color
  */
 export function interpolateColor(colorA: string, colorB: string, distance: number): string
 {
-  if(distance > 1) return colorA;
-  if(distance < 0) return colorB;
+  if(distance >= 1) return colorA;
+  if(distance <= 0) return colorB;
 
   const color = new Color('#00000000');
   const cA = new Color(colorA);
@@ -69,4 +69,9 @@ export function interpolateColor(colorA: string, colorB: string, distance: numbe
 export function isPointInCircle(point: Coordinate, center: Coordinate, radius: number)
 {
   return ((point.x - center.x)*(point.x - center.x) + (point.y - center.y)*(point.y - center.y)) < radius * radius;
+}
+
+export function isPositionPositive(point: Coordinate)
+{
+  return (point.x > 0) && (point.y > 0);
 }
