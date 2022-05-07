@@ -38,7 +38,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
   const clickPosition = useRef<Coordinate>({x: -1, y: -1});
   const mouseLeft = useRef<Boolean>(false);
-  const traceLine = useRef<Boolean>(true);
+
+  const [tracerLine, setTracerLine] = useState<Boolean>(true);
 
   const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
   
@@ -51,7 +52,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     {
       event.preventDefault();
       event.stopPropagation();
-      traceLine.current = !(traceLine.current);
+      setTracerLine(!tracerLine);
     }
     const button = document.getElementById('toggle');
     if(button !== undefined && button !== null)
@@ -68,7 +69,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       }
       button?.removeEventListener('click', toggleTracer);
     }
-  }, []);
+  }, [tracerLine]);
 
   useEffect(()=>{
     const canvas = canvasRef.current;
@@ -127,7 +128,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     //   context.restore();
     // }
 
-    if(traceLine.current)
+    if(tracerLine)
     {
       drawRecentPointsLine(context);
     }
@@ -207,7 +208,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
       const path = new Path2D();
       context.strokeStyle = gradient;
-      context.filter = `blur(1px)`;
+      // context.filter = `blur(1px)`;
       context.lineWidth = 5;
       path.moveTo(points[i].x, points[i].y);
       path.lineTo(points[i+1].x, points[i+1].y);
@@ -295,7 +296,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
       <div id="performance-stats"></div>
-      <button id="toggle" style={{position: 'fixed', right: 0, top: '10px'}}>{traceLine.current ? "switch Circle" : "switch Line"}</button>
+      <button id="toggle" style={{position: 'fixed', right: 0, top: '10px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
     </div>
   );
 }
