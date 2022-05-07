@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { WindowSize, Coordinate } from '../../@types';
 import WaveGroup from './WaveGroup';
+import { useCanvas } from '../useCanvas';
 
 import Stats from 'stats.js'
 
@@ -17,31 +18,30 @@ export default function WaveApp(props: WaveAppProps)
 {
   const stats = new Stats();
   const windowSize = props.windowSize;
-  const requestAnimationFrameRef = useRef(requestAnimationFrame(animate));
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const requestAnimationFrameRef = useRef<number>(-1);
+  const canvasRef = useCanvas(windowSize);
   const waveGroupRef = useRef<WaveGroup>(new WaveGroup({
     x: windowSize.width,
     y: windowSize.height
   }, 5));
-  const [stars, setStars] = useState<Array<Star>>([]);
+  const starsRef = useRef<Star[]>([]);
 
   document.getElementById('performance-stats')?.appendChild(stats.dom);
+
+  useEffect(() => {
+    requestAnimationFrameRef.current = requestAnimationFrame(animate);
+    return () => {
+      cancelAnimationFrame(requestAnimationFrameRef.current);
+    }
+  }, []);
 
   useEffect(()=>{
     const canvas = canvasRef.current;
     if(!canvas) return;
-    canvas.width = windowSize.width;
-    canvas.height = windowSize.height;
-
-    const context = canvas?.getContext('2d');
-
-    if(!context) return;
 
     makeStars(windowSize);
 
-    context.scale(1, 1);
-    context.fillStyle = '#000000';
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    // context.scale(1, 1);
 
     // waveGroupRef.current = new WaveGroup({
     //   x: windowSize.width,
@@ -53,9 +53,8 @@ export default function WaveApp(props: WaveAppProps)
     })
 
     return () => {
-      cancelAnimationFrame(requestAnimationFrameRef.current);
     }
-  }, [windowSize]);
+  }, [windowSize, canvasRef]);
 
 
   function animate(timestamp: number)
@@ -67,7 +66,7 @@ export default function WaveApp(props: WaveAppProps)
     if(!canvas || !context) return;
     const waveGroup = waveGroupRef.current;
 
-    context.clearRect(0, 0, windowSize.width, windowSize.height);
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     drawBackground(context);
     drawStars(context, -(timestamp / 1000) * Math.PI/180);
 
@@ -104,7 +103,7 @@ export default function WaveApp(props: WaveAppProps)
       };
       starArray[i] = star;
     }
-    setStars([...starArray]);
+    starsRef.current = [...starArray];
     console.log(`number of stars: ${numberOfStars}`);
   }
 
@@ -114,7 +113,7 @@ export default function WaveApp(props: WaveAppProps)
     context.rotate(radian);
     context.translate(-windowSize.width, -windowSize.height);
     context.fillStyle = "#bfb900";
-    stars.forEach(s => {
+    starsRef.current.forEach(s => {
       context.fillRect(s.coord.x, s.coord.y, s.size, s.size);
     });
     // Reset transformation matrix to the identity matrix

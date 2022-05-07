@@ -10,20 +10,26 @@ import { WindowSize } from './@types';
 import './App.scss';
 
 function App() {
-  const [windowSize, setWindowSize] = useState(getSize);
-
-  function getSize(): WindowSize
-  {
-    return {
-      width: document.body.clientWidth,
-      height: document.body.clientHeight,
-    };
-  }
+  const [windowSize, setWindowSize] = useState({
+    width: document.body.clientWidth,
+    height: document.body.clientHeight,
+  });
 
   useEffect(()=>{
-    const resizeHandler = ()=>{setWindowSize(getSize())};
-    window.addEventListener('resize', resizeHandler);
-  }, []);
+    window.addEventListener('resize', windowResizeHandler);
+
+    return () => {
+      window.removeEventListener('resize', windowResizeHandler);
+    }
+  }, [window]);
+
+  function windowResizeHandler(event: UIEvent)
+  {
+    setWindowSize({
+      width: document.body.clientWidth,
+      height: document.body.clientHeight,
+    });
+  }
 
   return (
     <BrowserRouter>

@@ -10,8 +10,14 @@ javascript로만 작성한 wave 페이지
 
 
 ### TODO
+useEffect에서 함수 호출 시에 dependency를 작성하는게 까다롭네
 
-윈도우 창 크기가 변경 될 때마다 프레임이 이상하게 변경됨. 리액트로 바꿀 때 잘못 작성한 듯 함.
+
+
+## 문제 발생과 해결
+resize시에 프레임 저하가 생김. 아마도 requestAnimationFrame 함수 관련된 문제인 것으로 보임.
+`const requestAnimationFrameRef = useRef(requestAnimationFrame(animate));` 로 초기화 하던 코드를 `const requestAnimationFrameRef = useRef<number>(-1);`으로 초기화 하고 `useEffect`의 callback에서 `requestAnimationFrameRef.current = requestAnimationFrame(animate);` 코드를 사용하면서 해결함.
+
 
 
 
