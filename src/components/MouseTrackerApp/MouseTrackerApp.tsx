@@ -38,6 +38,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
   const clickPosition = useRef<Coordinate>({x: -1, y: -1});
   const mouseLeft = useRef<Boolean>(false);
+  const traceLine = useRef<Boolean>(true);
 
   const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
   
@@ -45,6 +46,18 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   useEffect(() => {
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     document.getElementById('performance-stats')?.appendChild(stats.dom);
+
+    function toggleTracer(event: MouseEvent)
+    {
+      event.preventDefault();
+      event.stopPropagation();
+      traceLine.current = !(traceLine.current);
+    }
+    const button = document.getElementById('toggle');
+    if(button !== undefined && button !== null)
+    {
+      button.addEventListener('click', toggleTracer);
+    }
     return () => {
       cancelAnimationFrame(requestAnimationFrameRef.current);
 
@@ -53,6 +66,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       {
         perfStats.innerHTML = '';
       }
+      button?.removeEventListener('click', toggleTracer);
     }
   }, []);
 
@@ -68,6 +82,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     CircleGroupRef.current.draw(context, mousePosition.current);
     
     setCanvasPosition(getCanvasPosition());
+
 
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     canvas.addEventListener('mousemove', canvasMousemoveListener);
@@ -94,42 +109,83 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const context = canvas?.getContext('2d');
     if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
-    // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
+    // background
     context.fillStyle = '#16202e';
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
     // CircleGroupRef.current.draw(context, mousePosition.current);
-    if(!mouseLeft.current)
-    {
-      context.save();
-      context.filter = 'blur(10px)';
-      context.beginPath();
-      context.fillStyle = '#f0ffdb';
-      context.arc(mousePosition.current.x, mousePosition.current.y, 40, 0, 2*Math.PI);
-      context.fill();
-      context.restore();
-    }
+    // if(!mouseLeft.current)
+    // {
+    //   context.save();
+    //   context.filter = 'blur(10px)';
+    //   context.beginPath();
+    //   context.fillStyle = '#f0ffdb';
+    //   context.arc(mousePosition.current.x, mousePosition.current.y, 40, 0, 2*Math.PI);
+    //   context.fill();
+    //   context.restore();
+    // }
 
-    drawRecentPoints(context);
+    if(traceLine.current)
+    {
+      drawRecentPointsLine(context);
+    }
+    else
+    {
+      drawRecentPointsCircle(context);
+    }
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
   }
 
-  function drawRecentPoints(context: CanvasRenderingContext2D)
+  function drawRecentPointsCircle(context: CanvasRenderingContext2D)
   {
     /**
      * 맨 앞에 그리기
      */
     context.globalCompositeOperation = 'source-over';
 
-    const colorFrom = '#075bedff';
+    const colorFrom = '#f0ffdb90';
     const colorTo = '#d6e5ff00';
     const now = Date.now();
 
     const points = recentPoints.current;
 
+    context.save();
+    for(let i=0; i<points.length; i++)
+    {
+      if(now - points[i].timestamp > TimeLimitRecentPoints || 
+        points[i].x < 0 || points[i].y < 0)
+      {
+        // recentPoints.current = [];
+        continue;
+      }
+
+      context.beginPath();
+      context.filter = `blur(10px)`;
+      context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
+      context.arc(points[i].x, points[i].y, Math.min(20, 1/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
+      context.fill();
+    }
+    context.restore();
+  }
+
+  function drawRecentPointsLine(context: CanvasRenderingContext2D)
+  {
+    /**
+     * 맨 앞에 그리기
+     */
+    context.globalCompositeOperation = 'source-over';
+
+    const colorFrom = '#f0ffdb90';
+    const colorTo = '#d6e5ff00';
+    const now = Date.now();
+
+    const points = recentPoints.current;
+
+    context.save();
     for(let i=0; i<points.length - 1; i++)
     {
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
@@ -151,11 +207,13 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
       const path = new Path2D();
       context.strokeStyle = gradient;
-      context.lineWidth = 3;
+      context.filter = `blur(1px)`;
+      context.lineWidth = 5;
       path.moveTo(points[i].x, points[i].y);
       path.lineTo(points[i+1].x, points[i+1].y);
       context.stroke(path);
     }
+    context.restore();
   }
 
   function addRecentPoint(recentPoint: RecentPoint)
@@ -237,6 +295,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
       <div id="performance-stats"></div>
+      <button id="toggle" style={{position: 'fixed', right: 0, top: '10px'}}>{traceLine.current ? "switch Circle" : "switch Line"}</button>
     </div>
   );
 }
