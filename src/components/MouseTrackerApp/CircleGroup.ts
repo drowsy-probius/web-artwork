@@ -52,6 +52,5 @@ export default class CircleGroup{
         }, this.size);
       }
     }
-    console.log(this.circles);
   }
 }

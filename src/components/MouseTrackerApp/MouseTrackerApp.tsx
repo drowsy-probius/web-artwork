@@ -21,6 +21,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const windowSize = props.windowSize;
 
   const canvasRef = useCanvas(windowSize);
+  const canvasBackgroundRef = useCanvas(windowSize);
+
   const requestAnimationFrameRef = useRef<number>(-1);
   const CircleGroupRef = useRef<CircleGroup>(new CircleGroup(windowSize));
 
@@ -39,12 +41,18 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
   const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
   
-  document.getElementById('performance-stats')?.appendChild(stats.dom);
 
   useEffect(() => {
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
+    document.getElementById('performance-stats')?.appendChild(stats.dom);
     return () => {
       cancelAnimationFrame(requestAnimationFrameRef.current);
+
+      let perfStats = document.getElementById('performance-stats');
+      if(perfStats != undefined)
+      {
+        perfStats.innerHTML = '';
+      }
     }
   }, []);
 
@@ -80,11 +88,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   {
     stats.begin();
     const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if(!canvas || !context) return;
+    if(!canvas) return;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    if(!mouseLeft.current) drawRecentPoints();
+    if(!canvas && !mouseLeft.current) drawRecentPoints(canvas);
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
@@ -102,11 +108,10 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     }
   }
 
-  function drawRecentPoints()
+  function drawRecentPoints(canvas: HTMLCanvasElement)
   {
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if(!canvas || !context) return;
+    const context = canvas.getContext('2d');
+    if(!context) return;
 
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
@@ -208,6 +213,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   return (
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
+      <canvas ref={canvasBackgroundRef} id="MouseTrackerApp" style={{zIndex: -1}}></canvas>
       <div id="performance-stats"></div>
     </div>
   );

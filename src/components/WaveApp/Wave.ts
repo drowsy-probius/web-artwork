@@ -52,7 +52,7 @@ export default class Wave {
     this.points = [...pointArray];
   }
 
-  draw(context: CanvasRenderingContext2D, windowSize: Coordinate, timedelta: number)
+  draw(context: CanvasRenderingContext2D, timedelta: number)
   {
     if(!this.points || !this.stageSize) return;
 
@@ -96,8 +96,8 @@ export default class Wave {
     });
 
     context.lineTo(prev.x, prev.y); // create line to last point
-    context.lineTo(windowSize.x, windowSize.y); // to right bottom
-    context.lineTo(0, windowSize.y); // to left bottom
+    context.lineTo(context.canvas.width, context.canvas.height); // to right bottom
+    context.lineTo(0, context.canvas.height); // to left bottom
     //context.lineTo(this.points[0].coord.x, this.points[0].coord.y);
 
     context.fill();

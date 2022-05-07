@@ -26,12 +26,17 @@ export default function WaveApp(props: WaveAppProps)
   }, 5));
   const starsRef = useRef<Star[]>([]);
 
-  document.getElementById('performance-stats')?.appendChild(stats.dom);
 
   useEffect(() => {
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
+    document.getElementById('performance-stats')?.appendChild(stats.dom);
     return () => {
       cancelAnimationFrame(requestAnimationFrameRef.current);
+      let perfStats = document.getElementById('performance-stats');
+      if(perfStats != undefined)
+      {
+        perfStats.innerHTML = '';
+      }
     }
   }, []);
 
@@ -41,8 +46,6 @@ export default function WaveApp(props: WaveAppProps)
 
     makeStars(windowSize);
 
-    // context.scale(1, 1);
-
     // waveGroupRef.current = new WaveGroup({
     //   x: windowSize.width,
     //   y: windowSize.height
@@ -50,7 +53,7 @@ export default function WaveApp(props: WaveAppProps)
     waveGroupRef.current.resize({
       x:windowSize.width,
       y:windowSize.height
-    })
+    });
 
     return () => {
     }
@@ -70,10 +73,7 @@ export default function WaveApp(props: WaveAppProps)
     drawBackground(context);
     drawStars(context, -(timestamp / 1000) * Math.PI/180);
 
-    waveGroup.draw(context, {
-      x: windowSize.width,
-      y: windowSize.height
-    });
+    waveGroup.draw(context);
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
@@ -82,7 +82,7 @@ export default function WaveApp(props: WaveAppProps)
   function drawBackground(context: CanvasRenderingContext2D)
   {
     context.fillStyle = '#00181f';
-    context.fillRect(0, 0, windowSize.width, windowSize.height);
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }
 
   function makeStars(windowSize: WindowSize)

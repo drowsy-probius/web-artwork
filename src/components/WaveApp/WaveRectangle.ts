@@ -24,11 +24,11 @@ export default class WaveRectangle extends Wave
     // this.rectangle.resize(size);
   }
 
-  draw(context: CanvasRenderingContext2D, windowSize: Coordinate, timedelta: number)
+  draw(context: CanvasRenderingContext2D, timedelta: number)
   {
     if(!this.surfaces || !this.gradient) return;
 
-    super.draw(context, windowSize, timedelta);
+    super.draw(context, timedelta);
     this.rectangle.draw(context, this.surfaces[this.boatPoint], this.gradient[this.boatPoint]);
   }
 }

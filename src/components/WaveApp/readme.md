@@ -16,3 +16,6 @@
 
 ## 디버깅?
 vscode에서 실행하고 breakpoint걸면서 확인 가능
+
+## 문제점 및 해결?
+resize 시에 props.windowSize로 직접 변경했더니 배경이나 물결이 제대로 리사이즈 안됨. 대신에 context.canvas.width, context.canvas.height로 변경하니까 제대로 작동함. 앞으로는 screen space 재설정 할 때는 context.canvas 값으로 하는 것으로...

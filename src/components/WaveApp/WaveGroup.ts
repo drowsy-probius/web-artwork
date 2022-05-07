@@ -42,10 +42,10 @@ export default class WaveGroup {
     });
   }
 
-  draw(context: CanvasRenderingContext2D, windowSize: Coordinate, timedelta=0.005)
+  draw(context: CanvasRenderingContext2D, timedelta=0.005)
   {
     this.waves.forEach(wave => {
-      wave.draw(context, windowSize, timedelta);
+      wave.draw(context, timedelta);
     });
   }
 }
