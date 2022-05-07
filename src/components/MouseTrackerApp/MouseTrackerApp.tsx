@@ -21,7 +21,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const windowSize = props.windowSize;
 
   const canvasRef = useCanvas(windowSize);
-  const canvasBackgroundRef = useCanvas(windowSize);
 
   const requestAnimationFrameRef = useRef<number>(-1);
   const CircleGroupRef = useRef<CircleGroup>(new CircleGroup(windowSize));
@@ -33,11 +32,12 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
    * FIFO queue
    */
   const MaxRecentPoints = 100;
+  const TimeLimitRecentPoints = 600;
   const recentPoints = useRef<RecentPoint[]>([]);
 
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
   const clickPosition = useRef<Coordinate>({x: -1, y: -1});
-  const mouseLeft = useRef<Boolean>(true);
+  const mouseLeft = useRef<Boolean>(false);
 
   const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
   
@@ -49,7 +49,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       cancelAnimationFrame(requestAnimationFrameRef.current);
 
       let perfStats = document.getElementById('performance-stats');
-      if(perfStats != undefined)
+      if(perfStats !== undefined && perfStats !== null)
       {
         perfStats.innerHTML = '';
       }
@@ -59,18 +59,21 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   useEffect(()=>{
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
-    if(!canvas || !context) return;
+    if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
-    CircleGroupRef.current.resize(windowSize);
+    CircleGroupRef.current.resize({
+      width: context.canvas.width,
+      height: context.canvas.height
+    });
     CircleGroupRef.current.draw(context, mousePosition.current);
-
+    
     setCanvasPosition(getCanvasPosition());
 
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     canvas.addEventListener('mousemove', canvasMousemoveListener);
     canvas.addEventListener('mouseup', canvasMouseclickListener);
     canvas.addEventListener('mouseenter', canvasMouseenterListener);
     canvas.addEventListener('mouseleave', canvasMouseleaveListener);
-
     return () => {
       canvas.removeEventListener('mousemove', canvasMousemoveListener);
       canvas.removeEventListener('mouseup', canvasMouseclickListener);
@@ -88,32 +91,24 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   {
     stats.begin();
     const canvas = canvasRef.current;
-    if(!canvas) return;
+    const context = canvas?.getContext('2d');
+    if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
-    if(!canvas && !mouseLeft.current) drawRecentPoints(canvas);
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+    CircleGroupRef.current.draw(context, mousePosition.current);
+    drawRecentPoints(context);
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
   }
 
-  function addRecentPoint(recentPoint: RecentPoint)
+  function drawRecentPoints(context: CanvasRenderingContext2D)
   {
-    if(recentPoints.current.length >= MaxRecentPoints)
-    {
-      recentPoints.current = [...recentPoints.current.slice(1), recentPoint];
-    }
-    else
-    {
-      recentPoints.current = [...recentPoints.current, recentPoint];
-    }
-  }
-
-  function drawRecentPoints(canvas: HTMLCanvasElement)
-  {
-    const context = canvas.getContext('2d');
-    if(!context) return;
-
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    /**
+     * 맨 앞에 그리기
+     */
+    context.globalCompositeOperation = 'source-over';
 
     const colorFrom = '#075bedff';
     const colorTo = '#d6e5ff0f';
@@ -123,7 +118,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
     for(let i=0; i<points.length - 1; i++)
     {
-      if(mouseLeft.current || now - points[i].timestamp > 600 || points[i].x < 0 || points[i].y < 0)
+      if(mouseLeft.current || now - points[i].timestamp > TimeLimitRecentPoints || 
+        points[i].x < 0 || points[i].y < 0)
       {
         // recentPoints.current = [];
         break;
@@ -144,6 +140,18 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       path.moveTo(points[i].x, points[i].y);
       path.lineTo(points[i+1].x, points[i+1].y);
       context.stroke(path);
+    }
+  }
+
+  function addRecentPoint(recentPoint: RecentPoint)
+  {
+    if(recentPoints.current.length >= MaxRecentPoints)
+    {
+      recentPoints.current = [...recentPoints.current.slice(1), recentPoint];
+    }
+    else
+    {
+      recentPoints.current = [...recentPoints.current, recentPoint];
     }
   }
 
@@ -213,7 +221,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   return (
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
-      <canvas ref={canvasBackgroundRef} id="MouseTrackerApp" style={{zIndex: -1}}></canvas>
       <div id="performance-stats"></div>
     </div>
   );

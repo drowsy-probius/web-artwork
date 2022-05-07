@@ -1,3 +1,5 @@
+import { Coordinate } from "./@types";
+
 export class Color
 {
   rr: number = 0;
@@ -62,4 +64,9 @@ export function interpolateColor(colorA: string, colorB: string, distance: numbe
   color.aa = Math.round(cB.aa + distance*(cA.aa - cB.aa));
 
   return color.toString();
+}
+
+export function isPointInCircle(point: Coordinate, center: Coordinate, radius: number)
+{
+  return ((point.x - center.x)*(point.x - center.x) + (point.y - center.y)*(point.y - center.y)) < radius * radius;
 }
