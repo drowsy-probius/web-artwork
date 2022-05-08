@@ -16,10 +16,13 @@ export function useCanvas(windowSize: WindowSize): RefObject<HTMLCanvasElement>
     const context = canvas.getContext('2d');
     if(!context) return;
 
+    // canvas의 크기는 그대로 유지
+    canvas.style.width = windowSize.width + "px";
+    canvas.style.height = windowSize.height + "px";
+
+    // pixel 수 늘려서 선명하게 보이도록 함.
     canvas.width = windowSize.width * devicePixelRatio;
     canvas.height = windowSize.height * devicePixelRatio;
-    canvas.style.width = canvas.width + "px";
-    canvas.style.height = canvas.height + "px";
     context.scale(devicePixelRatio, devicePixelRatio);
   }, [windowSize]);
 

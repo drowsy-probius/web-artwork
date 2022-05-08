@@ -285,8 +285,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.stopPropagation();
 
     const pos: Coordinate = {
-      x: (event.clientX - canvasPosition.x) / devicePixelRatio,
-      y: (event.clientY - canvasPosition.y) / devicePixelRatio,
+      x: (event.clientX - canvasPosition.x),
+      y: (event.clientY - canvasPosition.y),
     };
     addRecentPoint({
       timestamp: Date.now(),
@@ -309,8 +309,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     for(let i=0; i<touches.length; i++)
     {
       const pos: Coordinate = {
-        x: (touches[i].clientX - canvasPosition.x) / devicePixelRatio,
-        y: (touches[i].clientY - canvasPosition.y) / devicePixelRatio,
+        x: (touches[i].clientX - canvasPosition.x),
+        y: (touches[i].clientY - canvasPosition.y),
       };
       addRecentPoint({
         timestamp: now,
