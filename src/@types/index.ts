@@ -3,48 +3,25 @@ export interface Coordinate {
   y: number
 }
 
-export class CoordinateApp {
-  coord: Coordinate;
-
-  constructor(coord: Coordinate)
-  {
-    this.coord = {...coord};
-  }
-
-  multiply(weight: number|Coordinate)
-  {
-    if(typeof(weight) === "number" )
-    {
-      this.coord.x *= weight;
-      this.coord.y *= weight;
-    }
-    else
-    {
-      this.coord.x *= weight.x;
-      this.coord.y *= weight.y;
-    }
-
-    return this.coord;
-  }
-
-  add(weight: number|Coordinate)
-  {
-    if(typeof(weight) === "number" )
-    {
-      this.coord.x += weight;
-      this.coord.y += weight;
-    }
-    else
-    {
-      this.coord.x += weight.x;
-      this.coord.y += weight.y;
-    }
-
-    return this.coord;
-  }
-}
-
 export interface WindowSize {
   width: number,
   height: number,
+}
+
+
+export interface Shape{
+  draw(context: CanvasRenderingContext2D, options: any) : void,
+  animate(options: any): void,
+  resize(options: any) : void,
+}
+
+export interface Circle extends Shape {
+  coord: Coordinate,
+  radius: number,
+}
+
+export interface Rectangle extends Shape {
+  coord: Coordinate,
+  size: Coordinate,
+  angle: number,
 }

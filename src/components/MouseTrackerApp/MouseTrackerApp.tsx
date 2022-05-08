@@ -3,8 +3,7 @@ import { WindowSize, Coordinate } from "../../@types";
 import { useCanvas } from "../useCanvas";
 
 import Stats from 'stats.js';
-import CircleGroup from "./CircleGroup";
-import { interpolateColor, isPositionPositive } from "../../functions";
+import { Color, interpolateColor } from "../../utils";
 
 interface MouseTrackerAppProps{
   windowSize: WindowSize
@@ -23,7 +22,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const canvasRef = useCanvas(windowSize);
 
   const requestAnimationFrameRef = useRef<number>(-1);
-  const CircleGroupRef = useRef<CircleGroup>(new CircleGroup(windowSize));
 
   /**
    * 최근 point로 마우스의 위치를 추적해볼 것임. 
@@ -31,13 +29,16 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
    * rendering되지 않도록 useState가 아니라 useRef을 사용함. 
    * FIFO queue
    */
-  const MaxRecentPoints = 300;
+  const MaxRecentPoints = 100;
   const TimeLimitRecentPoints = 800;
   const recentPoints = useRef<RecentPoint[]>([]);
 
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
   const clickPosition = useRef<Coordinate>({x: -1, y: -1});
   const mouseLeft = useRef<Boolean>(false);
+  const mouseLeftTime = useRef<number>(-1);
+  const trackerColor = new Color();
+  trackerColor.aa = Math.max(trackerColor.aa, 128);
 
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
 
@@ -76,12 +77,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const context = canvas?.getContext('2d');
     if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
-    CircleGroupRef.current.resize({
-      width: context.canvas.width,
-      height: context.canvas.height
-    });
-    CircleGroupRef.current.draw(context, mousePosition.current);
-    
     setCanvasPosition(getCanvasPosition());
 
 
@@ -116,26 +111,23 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     context.fillStyle = '#16202e';
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
-    // CircleGroupRef.current.draw(context, mousePosition.current);
-    // if(!mouseLeft.current)
-    // {
-    //   context.save();
-    //   context.filter = 'blur(10px)';
-    //   context.beginPath();
-    //   context.fillStyle = '#f0ffdb';
-    //   context.arc(mousePosition.current.x, mousePosition.current.y, 40, 0, 2*Math.PI);
-    //   context.fill();
-    //   context.restore();
-    // }
-
     if(tracerLine)
     {
       drawRecentPointsLine(context);
     }
     else
     {
+      if(mouseLeft.current === true && (Date.now() - mouseLeftTime.current) >= TimeLimitRecentPoints)
+      {
+        addRecentPoint({
+          timestamp: Date.now(),
+          x: Math.random() * context.canvas.width,
+          y: Math.random() * context.canvas.height
+        });
+      }
       drawRecentPointsCircle(context);
     }
+    trackerColor.animate();
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
@@ -148,8 +140,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
      */
     context.globalCompositeOperation = 'source-over';
 
-    const colorFrom = '#f0ffdb90';
-    const colorTo = '#d6e5ff00';
+    const colorFrom = trackerColor.toString();
+    const colorTo = '#00000000';
     const now = Date.now();
 
     const points = recentPoints.current;
@@ -167,7 +159,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       context.beginPath();
       context.filter = `blur(10px)`;
       context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
-      context.arc(points[i].x, points[i].y, Math.min(20, 1/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
+      context.arc(points[i].x, points[i].y, Math.min(20, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
       context.fill();
     }
     context.restore();
@@ -180,8 +172,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
      */
     context.globalCompositeOperation = 'source-over';
 
-    const colorFrom = '#f0ffdb90';
-    const colorTo = '#d6e5ff00';
+    const colorFrom = trackerColor.toString();
+    const colorTo = '#00000000';
     const now = Date.now();
 
     const points = recentPoints.current;
@@ -192,7 +184,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
         points[i].x < 0 || points[i].y < 0)
       {
-        // recentPoints.current = [];
+        recentPoints.current = [];
         continue;
       }
 
@@ -243,6 +235,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.stopPropagation();
 
     mouseLeft.current = true;
+    mouseLeftTime.current = Date.now();
   }
 
   function canvasMouseclickListener(event: MouseEvent)
