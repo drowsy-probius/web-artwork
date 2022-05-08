@@ -46,7 +46,7 @@ function App() {
         <Routes>
           <Route path='/' element={<div>root page</div>}></Route>
           <Route path='/wave' element={<WaveApp windowSize={windowSize}/>} ></Route>
-          <Route path='/solarSystem' element={<SolarSystemApp/>}></Route>
+          <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
           <Route path='/mouseTracker' element={<MouseTrackerApp windowSize={windowSize}/>}></Route>
         </Routes>
       </div>
