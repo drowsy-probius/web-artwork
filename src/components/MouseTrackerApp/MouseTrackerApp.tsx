@@ -55,6 +55,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       event.stopPropagation();
       setTracerLine(!tracerLine);
       mouseLeft.current = true;
+      recentPoints.current = [];
     }
     const button = document.getElementById('toggle');
     if(button !== undefined && button !== null)
@@ -289,6 +290,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.preventDefault();
     event.stopPropagation();
 
+    const now = Date.now();
     const touches = event.changedTouches;
 
     for(let i=0; i<touches.length; i++)
@@ -298,7 +300,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
         y: (touches[i].clientY - canvasPosition.y) / devicePixelRatio,
       };
       addRecentPoint({
-        timestamp: Date.now(),
+        timestamp: now,
         x: pos.x,
         y: pos.y
       });
