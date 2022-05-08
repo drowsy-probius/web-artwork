@@ -41,6 +41,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   trackerColor.current.aa = Math.max(trackerColor.current.aa, 128);
 
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
+  const [useBlur, setUseBlur] = useState<Boolean>(false);
 
   const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
   
@@ -57,10 +58,21 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       mouseLeft.current = true;
       recentPoints.current = [];
     }
+    function toggleUseBlur(event: MouseEvent)
+    {
+      event.preventDefault();
+      event.stopPropagation();
+      setUseBlur(!useBlur);
+    }
     const button = document.getElementById('toggle');
+    const buttonBlur = document.getElementById('toggle-blur');
     if(button !== undefined && button !== null)
     {
       button.addEventListener('click', toggleTracer);
+    }
+    if(buttonBlur !== undefined && buttonBlur !== null)
+    {
+      buttonBlur.addEventListener('click', toggleUseBlur);
     }
     return () => {
       cancelAnimationFrame(requestAnimationFrameRef.current);
@@ -71,8 +83,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
         perfStats.innerHTML = '';
       }
       button?.removeEventListener('click', toggleTracer);
+      buttonBlur?.removeEventListener('click', toggleUseBlur);
     }
-  }, [tracerLine]);
+  }, [tracerLine, useBlur]);
 
   useEffect(()=>{
     const canvas = canvasRef.current;
@@ -161,7 +174,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const points = recentPoints.current;
 
     context.save();
-    // context.filter = `blur(5px)`;
+    if(useBlur) context.filter = `blur(5px)`;
     for(let i=0; i<points.length; i++)
     {
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
@@ -193,6 +206,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const points = recentPoints.current;
 
     context.save();
+    if(useBlur) context.filter = `blur(1px)`;
     for(let i=0; i<points.length - 1; i++)
     {
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
@@ -214,7 +228,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
       const path = new Path2D();
       context.strokeStyle = gradient;
-      // context.filter = `blur(1px)`;
       context.lineWidth = 5;
       path.moveTo(points[i].x, points[i].y);
       path.lineTo(points[i+1].x, points[i+1].y);
@@ -343,7 +356,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
       <div id="performance-stats"></div>
-      <button id="toggle" style={{position: 'fixed', right: 0, bottom: '10px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
+      <button id="toggle" style={{position: 'fixed', right: 0, bottom: '50px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
+      <button id="toggle-blur" style={{position: 'fixed', right: 0, bottom: '0px'}}>{useBlur ? "disable blur" : "[!] enable blur"}</button>
     </div>
   );
 }
