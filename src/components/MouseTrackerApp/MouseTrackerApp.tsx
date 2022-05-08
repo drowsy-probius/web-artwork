@@ -184,7 +184,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
         points[i].x < 0 || points[i].y < 0)
       {
-        recentPoints.current = [];
+        // recentPoints.current = [];
         continue;
       }
 
