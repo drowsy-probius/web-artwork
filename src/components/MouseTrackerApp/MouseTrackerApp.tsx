@@ -37,8 +37,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const clickPosition = useRef<Coordinate>({x: -1, y: -1});
   const mouseLeft = useRef<Boolean>(false);
   const mouseLeftTime = useRef<number>(-1);
-  const trackerColor = new Color();
-  trackerColor.aa = Math.max(trackerColor.aa, 128);
+  const trackerColor = useRef<Color>(new Color());
+  trackerColor.current.aa = Math.max(trackerColor.current.aa, 128);
 
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
 
@@ -127,7 +127,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       }
       drawRecentPointsCircle(context);
     }
-    trackerColor.animate();
+    trackerColor.current.animate();
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
@@ -140,7 +140,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
      */
     context.globalCompositeOperation = 'source-over';
 
-    const colorFrom = trackerColor.toString();
+    const colorFrom = trackerColor.current.toString();
     const colorTo = '#00000000';
     const now = Date.now();
 
@@ -156,9 +156,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
         continue;
       }
 
-      context.beginPath();
       context.filter = `blur(10px)`;
       context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
+      context.beginPath();
       context.arc(points[i].x, points[i].y, Math.min(20, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
       context.fill();
     }
@@ -172,7 +172,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
      */
     context.globalCompositeOperation = 'source-over';
 
-    const colorFrom = trackerColor.toString();
+    const colorFrom = trackerColor.current.toString();
     const colorTo = '#00000000';
     const now = Date.now();
 
