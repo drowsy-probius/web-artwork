@@ -47,7 +47,7 @@ export class Color
 {
   rgb: number[];
   aa: number = 0;
-  maxRGB: number = 0; // open upper bound
+  maxRGB: number = 0; // closed upper bound
   minRGB: number = 0; // closed lower bound
   animateTarget: number = 0; // 0: rr, 1: gg, 2: bb
   animateSign: number = 1; // 1 or -1
@@ -65,7 +65,7 @@ export class Color
       this.rgb[1] = Math.floor(Math.random() * 256);
       this.rgb[2] = Math.floor(Math.random() * 256);
       this.aa = Math.floor(Math.random() * 256);
-      this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]) + 1;
+      this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]);
       this.minRGB = Math.min(this.rgb[0], this.rgb[1], this.rgb[2]);
       if(this.rgb[0] !== this.maxRGB && this.rgb[0] !== this.minRGB) this.animateTarget = 0;
       if(this.rgb[1] !== this.maxRGB && this.rgb[1] !== this.minRGB) this.animateTarget = 1;
@@ -87,7 +87,7 @@ export class Color
       throw new Error("invalid color format!");
     }
     this.aa = parseInt(color.slice(7, 9), 16);
-    this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]) + 1;
+    this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]);
     this.minRGB = Math.min(this.rgb[0], this.rgb[1], this.rgb[2]);
     if(this.rgb[0] !== this.maxRGB && this.rgb[0] !== this.minRGB) this.animateTarget = 0;
     if(this.rgb[1] !== this.maxRGB && this.rgb[1] !== this.minRGB) this.animateTarget = 1;
@@ -97,12 +97,12 @@ export class Color
   animate(delta: number = 1)
   {
     this.rgb[this.animateTarget] += this.animateSign * delta;
-    if(this.rgb[this.animateTarget] >= this.maxRGB - 1)
+    if(this.rgb[this.animateTarget] >= this.maxRGB)
     {
-      this.rgb[this.animateTarget] = this.maxRGB - 1;
+      this.rgb[this.animateTarget] = this.maxRGB;
       for(let i=0; i<3; i++)
       {
-        if(i !== this.animateTarget && this.rgb[i] === this.maxRGB - 1)
+        if(i !== this.animateTarget && this.rgb[i] === this.maxRGB)
         {
           this.animateTarget = i;
           this.animateSign = -1;

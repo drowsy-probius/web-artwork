@@ -119,15 +119,19 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     {
       if(mouseLeft.current === true && (Date.now() - mouseLeftTime.current) >= TimeLimitRecentPoints)
       {
+        let coord: Coordinate = {
+          x: Math.random() * context.canvas.width,
+          y: Math.random() * context.canvas.height,
+        }
         addRecentPoint({
           timestamp: Date.now(),
-          x: Math.random() * context.canvas.width,
-          y: Math.random() * context.canvas.height
+          ...coord
         });
       }
       drawRecentPointsCircle(context);
     }
     trackerColor.current.animate();
+    // console.log(trackerColor.current.toString());
 
     stats.end();
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
