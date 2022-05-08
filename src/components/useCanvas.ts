@@ -18,6 +18,8 @@ export function useCanvas(windowSize: WindowSize): RefObject<HTMLCanvasElement>
 
     canvas.width = windowSize.width * devicePixelRatio;
     canvas.height = windowSize.height * devicePixelRatio;
+    canvas.style.width = canvas.width + "px";
+    canvas.style.height = canvas.height + "px";
     context.scale(devicePixelRatio, devicePixelRatio);
   }, [windowSize]);
 

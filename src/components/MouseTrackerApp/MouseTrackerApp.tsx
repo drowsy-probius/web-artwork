@@ -54,6 +54,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       event.preventDefault();
       event.stopPropagation();
       setTracerLine(!tracerLine);
+      mouseLeft.current = true;
     }
     const button = document.getElementById('toggle');
     if(button !== undefined && button !== null)
@@ -85,11 +86,19 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     canvas.addEventListener('mouseup', canvasMouseclickListener);
     canvas.addEventListener('mouseenter', canvasMouseenterListener);
     canvas.addEventListener('mouseleave', canvasMouseleaveListener);
+
+    canvas.addEventListener('touchmove', canvasTouchmoveListener);
+    canvas.addEventListener('touchstart', canvasTouchstartListener);
+    canvas.addEventListener('touchend', canvasTouchendListener);
     return () => {
       canvas.removeEventListener('mousemove', canvasMousemoveListener);
       canvas.removeEventListener('mouseup', canvasMouseclickListener);
       canvas.removeEventListener('mouseenter', canvasMouseenterListener);
       canvas.removeEventListener('mouseleave', canvasMouseleaveListener);
+
+      canvas.removeEventListener('touchmove', canvasTouchmoveListener);
+      canvas.removeEventListener('touchstart', canvasTouchstartListener);
+      canvas.removeEventListener('touchend', canvasTouchendListener);
     }
   }, [windowSize]);
 
@@ -151,6 +160,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const points = recentPoints.current;
 
     context.save();
+    // context.filter = `blur(5px)`;
     for(let i=0; i<points.length; i++)
     {
       if(now - points[i].timestamp > TimeLimitRecentPoints || 
@@ -160,10 +170,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
         continue;
       }
 
-      context.filter = `blur(10px)`;
       context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
       context.beginPath();
-      context.arc(points[i].x, points[i].y, Math.min(20, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
+      context.arc(points[i].x, points[i].y, Math.min(20/devicePixelRatio, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
       context.fill();
     }
     context.restore();
@@ -262,8 +271,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.stopPropagation();
 
     const pos: Coordinate = {
-      x: event.clientX - canvasPosition.x,
-      y: event.clientY - canvasPosition.y,
+      x: (event.clientX - canvasPosition.x) / devicePixelRatio,
+      y: (event.clientY - canvasPosition.y) / devicePixelRatio,
     };
     addRecentPoint({
       timestamp: Date.now(),
@@ -274,6 +283,45 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
     // console.log(`Mpos: (${pos.x}, ${pos.y})`);
   }
+
+  function canvasTouchmoveListener(event: TouchEvent)
+  {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const touches = event.changedTouches;
+
+    for(let i=0; i<touches.length; i++)
+    {
+      const pos: Coordinate = {
+        x: (touches[i].clientX - canvasPosition.x) / devicePixelRatio,
+        y: (touches[i].clientY - canvasPosition.y) / devicePixelRatio,
+      };
+      addRecentPoint({
+        timestamp: Date.now(),
+        x: pos.x,
+        y: pos.y
+      });
+      mousePosition.current = pos;
+    }
+  }
+
+  function canvasTouchstartListener(event: TouchEvent)
+  {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = false;
+  }
+
+  function canvasTouchendListener(event: TouchEvent)
+  {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = true;
+  }
+
 
   function getCanvasPosition()
   {
@@ -293,7 +341,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     <div>
       <canvas ref={canvasRef} id="MouseTrackerApp" style={{zIndex: 1}}></canvas>
       <div id="performance-stats"></div>
-      <button id="toggle" style={{position: 'fixed', right: 0, top: '10px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
+      <button id="toggle" style={{position: 'fixed', right: 0, bottom: '10px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
     </div>
   );
 }
