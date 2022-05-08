@@ -37,8 +37,8 @@ function App() {
         <ul>
           <li><Link to='/'>goto home</Link></li>
           <li><Link to='/wave'>goto wave</Link></li>
-          <li><Link to='/solarSystem'>goto solar system</Link></li>
           <li><Link to='/mouseTracker'>goto mouse tracker</Link></li>
+          <li><Link to='/solarSystem'>goto solar system</Link></li>
         </ul>
       </div>
 
@@ -46,8 +46,8 @@ function App() {
         <Routes>
           <Route path='/' element={<div>root page</div>}></Route>
           <Route path='/wave' element={<WaveApp windowSize={windowSize}/>} ></Route>
-          <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
           <Route path='/mouseTracker' element={<MouseTrackerApp windowSize={windowSize}/>}></Route>
+          <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
         </Routes>
       </div>
     </BrowserRouter>

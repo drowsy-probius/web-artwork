@@ -4,6 +4,7 @@ import { useCanvas } from "../useCanvas";
 
 import Stats from 'stats.js';
 import { Color, interpolateColor } from "../../utils";
+import ConsoleLogApp from "../ConsoleLogApp";
 
 interface MouseTrackerAppProps{
   windowSize: WindowSize
@@ -335,6 +336,18 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.stopPropagation();
 
     mouseLeft.current = true;
+
+    const touches = event.changedTouches;
+    for(let i=0; i<touches.length; i++)
+    {
+      const pos: Coordinate = {
+        x: (touches[i].clientX - canvasPosition.x),
+        y: (touches[i].clientY - canvasPosition.y),
+      };
+      clickPosition.current = pos;
+      console.log(`Cpos: (${pos.x}, ${pos.y})`);
+    }
+
   }
 
 
@@ -358,6 +371,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       <div id="performance-stats"></div>
       <button id="toggle" style={{position: 'fixed', right: 0, bottom: '50px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
       <button id="toggle-blur" style={{position: 'fixed', right: 0, bottom: '0px'}}>{useBlur ? "disable blur" : "[!] enable blur"}</button>
+      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
+        <ConsoleLogApp />
+      </div>
     </div>
   );
 }

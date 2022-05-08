@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { WindowSize, Coordinate } from '../../@types';
 import WaveGroup from './WaveGroup';
 import { useCanvas } from '../useCanvas';
+import ConsoleLogApp from '../ConsoleLogApp';
 
 import Stats from 'stats.js'
 
@@ -127,6 +128,9 @@ export default function WaveApp(props: WaveAppProps)
         This text is displayed if your browser does not support HTML5 Canvas.
       </canvas>
       <div id='performance-stats'></div>
+      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
+        <ConsoleLogApp />
+      </div>
       {/* <audio src="https://github.com/k123s456h/web-artwork/raw/main/public/Waves-sound-effect.mp3" controls autoPlay loop>
         <p>
         Audio file from here:
