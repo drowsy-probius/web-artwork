@@ -14,9 +14,3 @@ string 형식으로 html에 출력하는 것이라서 일부 스타일은 표시
 
 ![demo](./demo.gif)
 
-
-<!-- <video width="100%" height="100%" controls>
-  <source src="demo.mp4" type="video/mp4">
-</video> -->
-
-
