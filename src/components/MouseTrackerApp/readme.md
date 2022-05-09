@@ -7,6 +7,8 @@ mousePosition을 아무 생각 없이 useState로 처음에 관리했는데 그�
 
 blur 효과는 넣으면 미적으로는 좋지만 성능하락이 커짐. 특히 모바일에서는 30프레임 이하로 떨어지기도 함. html dom element라면 각각 처리를 css로 할 수도 있겠지만 canvas 내의 요소라서 그런 접근은 어려움. 어디서 읽기로는 alpha 옵션을 끄면 성능 향상이 있다고 함.
 
+blur만 끄면 모바일에서 120프레임도 충분히 나옴.
+
 ryzen 3600 + rtx 2080 에서의 대략적인 성능 측정
 
 ![선](./gpu_usage_line.gif)
