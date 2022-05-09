@@ -92,7 +92,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     const points = recentPoints.current;
 
     context.save();
-    if (useBlur) context.filter = `blur(1px)`;
+    if (useBlur) context.filter = `blur(3px)`;
     for (let i = 0; i < points.length - 1; i++) {
       if (
         now - points[i].timestamp > TimeLimitRecentPoints ||
