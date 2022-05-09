@@ -12,9 +12,11 @@ setLog 함수가 비동기라서 console.log 함수가 너무 짧은 간격으�
 string 형식으로 html에 출력하는 것이라서 일부 스타일은 표시가 안됨 (ex. pixijs message). 나중에 후처리 하는 방식을 배워서 해결 하던가 해야지
 
 
+![demo](./demo.gif)
 
-<video width="100%" height="100%" controls>
+
+<!-- <video width="100%" height="100%" controls>
   <source src="demo.mp4" type="video/mp4">
-</video>
+</video> -->
 
 
