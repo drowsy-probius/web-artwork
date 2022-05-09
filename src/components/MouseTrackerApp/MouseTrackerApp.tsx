@@ -72,7 +72,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
       context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
       context.beginPath();
-      context.arc(points[i].x, points[i].y, Math.min(20/devicePixelRatio, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
+      context.arc(points[i].x, points[i].y, Math.min(25/devicePixelRatio, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
       context.fill();
     }
     context.restore();
@@ -231,9 +231,11 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     event.preventDefault();
     event.stopPropagation();
 
-    mouseLeft.current = true;
 
     const touches = event.changedTouches;
+
+    mouseLeft.current = true;
+
     for(let i=0; i<touches.length; i++)
     {
       const pos: Coordinate = {

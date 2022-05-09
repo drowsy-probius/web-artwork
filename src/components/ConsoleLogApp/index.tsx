@@ -5,6 +5,7 @@ export default function ConsoleLogApp()
 {
   const LIMIT = 7;
   const [log, setLog] = useState<string[]>([]);
+  const [isHidden, setIsHidden] = useState<Boolean>(false);
   const buffer = useRef<string[]>([]);
 
   if(isMobile)
@@ -41,6 +42,18 @@ export default function ConsoleLogApp()
   }
 
 
+  const toggleLogger = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const element = document.getElementById('console-messages');
+    if(element === undefined || element === null) return;
+
+    setIsHidden(!element.hidden);
+    element.hidden = !element.hidden;
+  }
+
+
   useEffect(() => {
     setLog([...buffer.current, ...log.slice(0, LIMIT - buffer.current.length > 0 ? LIMIT - buffer.current.length : buffer.current.length)]);
     buffer.current = [];
@@ -49,13 +62,16 @@ export default function ConsoleLogApp()
 
   return (
     <MobileView>
-      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
-        <b>last {LIMIT} console message:</b> <br/><hr/>
-        {
-          log.map((msg, idx) => (
-            <div key={idx}>{msg}<br/></div>
-          ))
-        }
+      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}} onClick={toggleLogger}>
+        <b>tab here to {isHidden ? "show" : "hide"} messages</b> <br/>
+        <div id="console-messages">
+          <b>last {LIMIT} console message:</b> <br/><hr/>
+          {
+            log.map((msg, idx) => (
+              <div key={idx}>{msg}<br/></div>
+            ))
+          }
+        </div>
       </div>
     </MobileView>
   );
