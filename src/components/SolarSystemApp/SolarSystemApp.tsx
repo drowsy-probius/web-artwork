@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from 'pixi.js';
 import { WindowSize } from "../../@types";
-import ConsoleLogApp from "../ConsoleLogApp";
 
 interface SolarSystemAppProps
 {
@@ -21,15 +20,12 @@ export default function SolarSystemApp(props: SolarSystemAppProps)
     return () => {
       pixiApp.destroy(true, true);
     }
-  }, []);
+  }, [windowSize]);
 
 
   return (
     <>
       <div id="pixi" ref={pixiAppRef}></div>
-      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
-        <ConsoleLogApp />
-      </div>
     </>
   )
 }

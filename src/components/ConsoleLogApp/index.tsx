@@ -1,40 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { MobileView, isMobile } from "react-device-detect";
+import React, { useState } from "react";
 
 export default function ConsoleLogApp()
 {
-  const LIMIT = 5;
+  const LIMIT = 7;
   const [log, setLog] = useState<string[]>([]);
 
-
   const originalLog = console.log;
-  console.log = function(txt){
-    if(isMobile)
-    {
-      if(log.length >= LIMIT)
-      {
-        setLog([txt, ...log.slice(0, 4)]);
-      }
-      else
-      {
-        setLog([txt, ...log]);
-      }
-    }
-    else
-    {
-      originalLog(txt);
-    }
+  console.log = function(...args){
+    originalLog.apply(this, args);
+    setLog([...args.slice(0, LIMIT), ...log.slice(0, LIMIT - args.length >= 0 ? LIMIT - args.length : 0)]);
   }
-  
+
 
   return (
-    <MobileView>
+    <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
       <b>last {LIMIT} console log message:</b> <br/>
       {
         log.map((msg, idx) => (
           <div key={idx}>{msg}<br/></div>
         ))
       }
-    </MobileView>
+    </div>
   );
 }

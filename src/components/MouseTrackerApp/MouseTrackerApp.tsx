@@ -1,10 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import { WindowSize, Coordinate } from "../../@types";
 import { useCanvas } from "../useCanvas";
 
 import Stats from 'stats.js';
 import { Color, interpolateColor } from "../../utils";
-import ConsoleLogApp from "../ConsoleLogApp";
 
 interface MouseTrackerAppProps{
   windowSize: WindowSize
@@ -16,7 +15,7 @@ interface RecentPoint extends Coordinate{
 
 export default function MouseTrackerApp(props: MouseTrackerAppProps)
 {
-  const stats = new Stats();
+  const stats = useMemo(() => new Stats(), []);
 
   const windowSize = props.windowSize;
 
@@ -44,9 +43,265 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
   const [useBlur, setUseBlur] = useState<Boolean>(false);
 
-  const [canvasPosition, setCanvasPosition] = useState<Coordinate>(getCanvasPosition);
+  const [canvasPosition, setCanvasPosition] = useState<Coordinate>({x: -1, y: -1});
   
+  /***************************************** */
 
+  const drawRecentPointsCircle = useCallback(async (context: CanvasRenderingContext2D) => {
+    /**
+     * 맨 앞에 그리기
+     */
+    context.globalCompositeOperation = 'source-over';
+
+    const colorFrom = trackerColor.current.toString();
+    const colorTo = '#00000000';
+    const now = Date.now();
+
+    const points = recentPoints.current;
+
+    context.save();
+    if(useBlur) context.filter = `blur(5px)`;
+    for(let i=0; i<points.length; i++)
+    {
+      if(now - points[i].timestamp > TimeLimitRecentPoints || 
+        points[i].x < 0 || points[i].y < 0)
+      {
+        // recentPoints.current = [];
+        continue;
+      }
+
+      context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
+      context.beginPath();
+      context.arc(points[i].x, points[i].y, Math.min(20/devicePixelRatio, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
+      context.fill();
+    }
+    context.restore();
+  }, [useBlur]);
+
+
+  const drawRecentPointsLine = useCallback(async (context: CanvasRenderingContext2D) => {
+    /**
+     * 맨 앞에 그리기
+     */
+    context.globalCompositeOperation = "source-over";
+
+    const colorFrom = trackerColor.current.toString();
+    const colorTo = "#00000000";
+    const now = Date.now();
+
+    const points = recentPoints.current;
+
+    context.save();
+    if (useBlur) context.filter = `blur(1px)`;
+    for (let i = 0; i < points.length - 1; i++) {
+      if (
+        now - points[i].timestamp > TimeLimitRecentPoints ||
+        points[i].x < 0 ||
+        points[i].y < 0
+      ) {
+        // recentPoints.current = [];
+        continue;
+      }
+
+      const colorStart = interpolateColor(
+        colorFrom,
+        colorTo,
+        i / points.length
+      );
+      const colorEnd = interpolateColor(
+        colorFrom,
+        colorTo,
+        (i + 1) / points.length
+      );
+
+      const gradient = context.createLinearGradient(
+        points[i].x,
+        points[i].y,
+        points[i + 1].x + 1,
+        points[i + 1].y + 1
+      );
+      gradient.addColorStop(0, colorStart);
+      gradient.addColorStop(1, colorEnd);
+
+      const path = new Path2D();
+      context.strokeStyle = gradient;
+      context.lineWidth = 5;
+      path.moveTo(points[i].x, points[i].y);
+      path.lineTo(points[i + 1].x, points[i + 1].y);
+      context.stroke(path);
+    }
+    context.restore();
+  }, [useBlur]);
+
+
+  const addRecentPoint = useCallback( (recentPoint: RecentPoint) => {
+    if(recentPoints.current.length >= MaxRecentPoints)
+    {
+      recentPoints.current = [...recentPoints.current.slice(1), recentPoint];
+    }
+    else
+    {
+      recentPoints.current = [...recentPoints.current, recentPoint];
+    }
+  }, []);
+
+
+  const canvasMouseenterListener = useCallback((event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = false;
+  }, []);
+
+
+  const canvasMouseleaveListener = useCallback((event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = true;
+    mouseLeftTime.current = Date.now();
+  }, []);
+
+
+  const canvasMouseclickListener = useCallback((event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const pos: Coordinate = {
+      x: event.clientX - canvasPosition.x,
+      y: event.clientY - canvasPosition.y,
+    };
+    clickPosition.current = pos;
+
+    console.log(`Cpos: (${pos.x}, ${pos.y})`);
+  }, [canvasPosition]);
+
+
+  const canvasMousemoveListener = useCallback((event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const pos: Coordinate = {
+      x: (event.clientX - canvasPosition.x),
+      y: (event.clientY - canvasPosition.y),
+    };
+    addRecentPoint({
+      timestamp: Date.now(),
+      x: pos.x,
+      y: pos.y
+    });
+    mousePosition.current = pos;
+
+    // console.log(`Mpos: (${pos.x}, ${pos.y})`);
+  }, [addRecentPoint, canvasPosition]);
+
+
+  const canvasTouchmoveListener = useCallback((event: TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const now = Date.now();
+    const touches = event.changedTouches;
+
+    for(let i=0; i<touches.length; i++)
+    {
+      const pos: Coordinate = {
+        x: (touches[i].clientX - canvasPosition.x),
+        y: (touches[i].clientY - canvasPosition.y),
+      };
+      addRecentPoint({
+        timestamp: now,
+        x: pos.x,
+        y: pos.y
+      });
+      mousePosition.current = pos;
+    }
+  }, [addRecentPoint, canvasPosition]);
+
+
+  const canvasTouchstartListener = useCallback((event: TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = false;
+  }, []);
+
+
+  const canvasTouchendListener = useCallback((event: TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mouseLeft.current = true;
+
+    const touches = event.changedTouches;
+    for(let i=0; i<touches.length; i++)
+    {
+      const pos: Coordinate = {
+        x: (touches[i].clientX - canvasPosition.x),
+        y: (touches[i].clientY - canvasPosition.y),
+      };
+      clickPosition.current = pos;
+      console.log(`Cpos: (${pos.x}, ${pos.y})`);
+    }
+  }, [canvasPosition]);
+
+
+  const getCanvasPosition = useCallback(() => {
+    let pos: Coordinate = {
+      x: 0,
+      y: 0
+    };
+    const canvas = canvasRef.current;
+    if(!canvas) return pos;
+    pos.x = canvas.getBoundingClientRect().left;
+    pos.y = canvas.getBoundingClientRect().top;
+    return pos;
+  }, [canvasRef]);
+
+
+  /**
+   * timestamp: 단위 ms
+   * 1000.111ms
+   */
+   const animate = useCallback(async (timestamp: number) => {
+    stats.begin();
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if(canvas === null || canvas === undefined || context === null || context === undefined) return;
+
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+    // background
+    context.fillStyle = '#16202e';
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+    if(tracerLine)
+    {
+      drawRecentPointsLine(context);
+    }
+    else
+    {
+      if(mouseLeft.current === true && (Date.now() - mouseLeftTime.current) >= TimeLimitRecentPoints)
+      {
+        let coord: Coordinate = {
+          x: Math.random() * context.canvas.width,
+          y: Math.random() * context.canvas.height,
+        }
+        addRecentPoint({
+          timestamp: Date.now(),
+          ...coord
+        });
+      }
+      drawRecentPointsCircle(context);
+    }
+    trackerColor.current.animate();
+    // console.log(trackerColor.current.toString());
+
+    stats.end();
+    requestAnimationFrameRef.current = requestAnimationFrame(animate);
+  }, [canvasRef, drawRecentPointsCircle, drawRecentPointsLine, stats, tracerLine, addRecentPoint]);
+
+  
   useEffect(() => {
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     document.getElementById('performance-stats')?.appendChild(stats.dom);
@@ -86,7 +341,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       button?.removeEventListener('click', toggleTracer);
       buttonBlur?.removeEventListener('click', toggleUseBlur);
     }
-  }, [tracerLine, useBlur]);
+  }, [tracerLine, useBlur, animate, stats.dom]);
+
 
   useEffect(()=>{
     const canvas = canvasRef.current;
@@ -94,7 +350,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     if(canvas === null || canvas === undefined || context === null || context === undefined) return;
 
     setCanvasPosition(getCanvasPosition());
-
 
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     canvas.addEventListener('mousemove', canvasMousemoveListener);
@@ -115,254 +370,8 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       canvas.removeEventListener('touchstart', canvasTouchstartListener);
       canvas.removeEventListener('touchend', canvasTouchendListener);
     }
-  }, [windowSize]);
-
-
-  /**
-   * timestamp: 단위 ms
-   * 1000.111ms
-   */
-  function animate(timestamp: number)
-  {
-    stats.begin();
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if(canvas === null || canvas === undefined || context === null || context === undefined) return;
-
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
-    // background
-    context.fillStyle = '#16202e';
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-
-    if(tracerLine)
-    {
-      drawRecentPointsLine(context);
-    }
-    else
-    {
-      if(mouseLeft.current === true && (Date.now() - mouseLeftTime.current) >= TimeLimitRecentPoints)
-      {
-        let coord: Coordinate = {
-          x: Math.random() * context.canvas.width,
-          y: Math.random() * context.canvas.height,
-        }
-        addRecentPoint({
-          timestamp: Date.now(),
-          ...coord
-        });
-      }
-      drawRecentPointsCircle(context);
-    }
-    trackerColor.current.animate();
-    // console.log(trackerColor.current.toString());
-
-    stats.end();
-    requestAnimationFrameRef.current = requestAnimationFrame(animate);
-  }
-
-  function drawRecentPointsCircle(context: CanvasRenderingContext2D)
-  {
-    /**
-     * 맨 앞에 그리기
-     */
-    context.globalCompositeOperation = 'source-over';
-
-    const colorFrom = trackerColor.current.toString();
-    const colorTo = '#00000000';
-    const now = Date.now();
-
-    const points = recentPoints.current;
-
-    context.save();
-    if(useBlur) context.filter = `blur(5px)`;
-    for(let i=0; i<points.length; i++)
-    {
-      if(now - points[i].timestamp > TimeLimitRecentPoints || 
-        points[i].x < 0 || points[i].y < 0)
-      {
-        // recentPoints.current = [];
-        continue;
-      }
-
-      context.fillStyle = interpolateColor(colorFrom, colorTo, i/points.length);
-      context.beginPath();
-      context.arc(points[i].x, points[i].y, Math.min(20/devicePixelRatio, 2/((now - points[i].timestamp)/TimeLimitRecentPoints)), 0, 2*Math.PI);
-      context.fill();
-    }
-    context.restore();
-  }
-
-  function drawRecentPointsLine(context: CanvasRenderingContext2D)
-  {
-    /**
-     * 맨 앞에 그리기
-     */
-    context.globalCompositeOperation = 'source-over';
-
-    const colorFrom = trackerColor.current.toString();
-    const colorTo = '#00000000';
-    const now = Date.now();
-
-    const points = recentPoints.current;
-
-    context.save();
-    if(useBlur) context.filter = `blur(1px)`;
-    for(let i=0; i<points.length - 1; i++)
-    {
-      if(now - points[i].timestamp > TimeLimitRecentPoints || 
-        points[i].x < 0 || points[i].y < 0)
-      {
-        // recentPoints.current = [];
-        continue;
-      }
-
-      const colorStart = interpolateColor(colorFrom, colorTo, i/points.length);
-      const colorEnd = interpolateColor(colorFrom, colorTo, (i+1)/points.length);
-
-      const gradient = context.createLinearGradient(
-        points[i].x, points[i].y,
-        points[i+1].x+1, points[i+1].y+1
-      );
-      gradient.addColorStop(0, colorStart);
-      gradient.addColorStop(1, colorEnd);   
-
-      const path = new Path2D();
-      context.strokeStyle = gradient;
-      context.lineWidth = 5;
-      path.moveTo(points[i].x, points[i].y);
-      path.lineTo(points[i+1].x, points[i+1].y);
-      context.stroke(path);
-    }
-    context.restore();
-  }
-
-  function addRecentPoint(recentPoint: RecentPoint)
-  {
-    if(recentPoints.current.length >= MaxRecentPoints)
-    {
-      recentPoints.current = [...recentPoints.current.slice(1), recentPoint];
-    }
-    else
-    {
-      recentPoints.current = [...recentPoints.current, recentPoint];
-    }
-  }
-
-  function canvasMouseenterListener(event: MouseEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    mouseLeft.current = false;
-  }
-
-  function canvasMouseleaveListener(event: MouseEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    mouseLeft.current = true;
-    mouseLeftTime.current = Date.now();
-  }
-
-  function canvasMouseclickListener(event: MouseEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const pos: Coordinate = {
-      x: event.clientX - canvasPosition.x,
-      y: event.clientY - canvasPosition.y,
-    };
-    clickPosition.current = pos;
-
-    console.log(`Cpos: (${pos.x}, ${pos.y})`);
-  }
-
-  function canvasMousemoveListener(event: MouseEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const pos: Coordinate = {
-      x: (event.clientX - canvasPosition.x),
-      y: (event.clientY - canvasPosition.y),
-    };
-    addRecentPoint({
-      timestamp: Date.now(),
-      x: pos.x,
-      y: pos.y
-    });
-    mousePosition.current = pos;
-
-    // console.log(`Mpos: (${pos.x}, ${pos.y})`);
-  }
-
-  function canvasTouchmoveListener(event: TouchEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const now = Date.now();
-    const touches = event.changedTouches;
-
-    for(let i=0; i<touches.length; i++)
-    {
-      const pos: Coordinate = {
-        x: (touches[i].clientX - canvasPosition.x),
-        y: (touches[i].clientY - canvasPosition.y),
-      };
-      addRecentPoint({
-        timestamp: now,
-        x: pos.x,
-        y: pos.y
-      });
-      mousePosition.current = pos;
-    }
-  }
-
-  function canvasTouchstartListener(event: TouchEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    mouseLeft.current = false;
-  }
-
-  function canvasTouchendListener(event: TouchEvent)
-  {
-    event.preventDefault();
-    event.stopPropagation();
-
-    mouseLeft.current = true;
-
-    const touches = event.changedTouches;
-    for(let i=0; i<touches.length; i++)
-    {
-      const pos: Coordinate = {
-        x: (touches[i].clientX - canvasPosition.x),
-        y: (touches[i].clientY - canvasPosition.y),
-      };
-      clickPosition.current = pos;
-      console.log(`Cpos: (${pos.x}, ${pos.y})`);
-    }
-
-  }
-
-
-  function getCanvasPosition()
-  {
-    let pos: Coordinate = {
-      x: 0,
-      y: 0
-    };
-    const canvas = canvasRef.current;
-    if(!canvas) return pos;
-    pos.x = canvas.getBoundingClientRect().left;
-    pos.y = canvas.getBoundingClientRect().top;
-    return pos;
-  }
+  }, [windowSize, canvasMouseclickListener, canvasMouseenterListener, canvasMousemoveListener, canvasMouseleaveListener,
+  canvasTouchmoveListener, canvasTouchstartListener, canvasTouchendListener, canvasRef, getCanvasPosition]);
 
 
   return (
@@ -371,9 +380,6 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
       <div id="performance-stats"></div>
       <button id="toggle" style={{position: 'fixed', right: 0, bottom: '50px'}}>{tracerLine ? "switch Circle" : "switch Line"}</button>
       <button id="toggle-blur" style={{position: 'fixed', right: 0, bottom: '0px'}}>{useBlur ? "disable blur" : "[!] enable blur"}</button>
-      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
-        <ConsoleLogApp />
-      </div>
     </div>
   );
 }
