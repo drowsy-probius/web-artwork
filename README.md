@@ -23,7 +23,13 @@ retina display를 위해서 devicePixelRatio 값으로 canvas.width, canvas.heig
 
 ## libraries
 
-for 2D graphics: [PixiJS](https://pixijs.com)
+for 2D graphics: pure canvas element, or [PixiJS](https://pixijs.com)
+
+[tutorial](https://pixijs.com/tutorials)
+
+[react-pixi](https://github.com/inlet/react-pixi)
+
+
 
 for 3D graphics: [three.js](https://threejs.org)
 
