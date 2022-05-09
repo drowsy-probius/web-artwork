@@ -10,7 +10,33 @@ export default function ConsoleLogApp()
   if(isMobile)
   {
     console.log = function(...args){
-      buffer.current = [...buffer.current, ...args];
+      args.forEach(e => {
+        buffer.current = [...buffer.current, `[i] ${e}`];
+      })
+    }
+
+    console.info = function(...args){
+      args.forEach(e => {
+        buffer.current = [...buffer.current, `[i] ${e}`];
+      })
+    }
+
+    console.error = function(...args){
+      args.forEach(e => {
+        buffer.current = [...buffer.current, `[e] ${e}`];
+      })
+    }
+
+    console.warn = function(...args){
+      args.forEach(e => {
+        buffer.current = [...buffer.current, `[w] ${e}`];
+      })
+    }
+
+    console.debug = function(...args){
+      args.forEach(e => {
+        buffer.current = [...buffer.current, `[d] ${e}`];
+      })
     }
   }
 
@@ -24,7 +50,7 @@ export default function ConsoleLogApp()
   return (
     <MobileView>
       <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}}>
-        <b>last {LIMIT} console log message:</b> <br/><hr/>
+        <b>last {LIMIT} console message:</b> <br/><hr/>
         {
           log.map((msg, idx) => (
             <div key={idx}>{msg}<br/></div>

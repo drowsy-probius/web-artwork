@@ -14,6 +14,7 @@ export default class WaveGroup {
   {
     console.log(`numberOfPointsPerWave= ${numberOfPointsPerWave}`);
     console.log(`numberOfWaves= ${numberOfWaves}`);
+    
     this.windowSize = windowSize;
     this.color = color;
     this.numberOfWaves = numberOfWaves;

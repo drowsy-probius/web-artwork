@@ -87,7 +87,17 @@ export default function WaveApp(props: WaveAppProps)
   }, [canvasRef, drawStars, stats]);
 
 
-  useEffect(() => {
+  useEffect(()=>{
+    const canvas = canvasRef.current;
+    if(!canvas) return;
+
+    makeStars(windowSize);
+
+    waveGroupRef.current = new WaveGroup({
+      x: windowSize.width,
+      y: windowSize.height
+    }, Math.floor(canvas.width/(200 * devicePixelRatio)));
+
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     document.getElementById('performance-stats')?.appendChild(stats.dom);
     return () => {
@@ -98,27 +108,7 @@ export default function WaveApp(props: WaveAppProps)
         perfStats.innerHTML = '';
       }
     }
-  }, [animate, stats.dom]);
-
-
-  useEffect(()=>{
-    const canvas = canvasRef.current;
-    if(!canvas) return;
-
-    makeStars(windowSize);
-
-    waveGroupRef.current = new WaveGroup({
-      x: windowSize.width,
-      y: windowSize.height
-    }, Math.floor(canvas.width/200));
-    // waveGroupRef.current.resize({
-    //   x:windowSize.width,
-    //   y:windowSize.height
-    // });
-
-    return () => {
-    }
-  }, [windowSize, canvasRef]);
+  }, [windowSize, canvasRef, animate, stats.dom]);
 
 
   return (
