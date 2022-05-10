@@ -3,7 +3,7 @@
 
 => 아마도 상위 component가 mount되기 전에 react-pixi의 Stage 컴포넌트가 호출이 되어서 그런 것 같아서 의존성?을 추가하면 해결될 것이라 생각함. [App.tsx](../../App.tsx)에서 `renderChildren` 변수를 추가해서 조건문으로 렌더링하는 컴포넌트를 다르게 해서 해결함. [App.tsx](../../App.tsx)에서는 처음에 연산이 큰 작업이 없으니 성능하락 등의 체감은 없음.
 
-=> 라이브러리 자체 에러임. [issue](https://github.com/inlet/react-pixi/issues/337)
+=> 라이브러리 자체 에러임. 현재 react 18과 호환이 좋지 않음. [issue](https://github.com/inlet/react-pixi/issues/337)
 
 
 모바일에서 열리지 않음....?? 왜...?
