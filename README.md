@@ -26,7 +26,9 @@ useEffect에서 함수 호출 시에 dependency를 작성하는게 까다롭네 
 
 ## libraries
 
-for 2D graphics: pure canvas element, or [PixiJS](https://pixijs.com)
+pure canvas or...
+
+for 2D graphics: [PixiJS](https://pixijs.com)
 
 [tutorial](https://pixijs.com/tutorials)
 
@@ -35,6 +37,8 @@ for 2D graphics: pure canvas element, or [PixiJS](https://pixijs.com)
 
 
 for 3D graphics: [three.js](https://threejs.org)
+
+[react-three-fiber](https://github.com/pmndrs/react-three-fiber)
 
 
 
