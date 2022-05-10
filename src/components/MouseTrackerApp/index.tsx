@@ -283,7 +283,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
     // background
-    context.fillStyle = '#16202e';
+    context.fillStyle = '#131816';
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
     if(tracerLine)

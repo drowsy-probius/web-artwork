@@ -1,31 +1,22 @@
-import React, { useEffect, useRef } from "react";
-import * as PIXI from 'pixi.js';
+import React from "react";
 import { WindowSize } from "../../@types";
+import { Stage } from "@inlet/react-pixi";
+import * as PIXI from 'pixi.js';
 
 interface SolarSystemAppProps
 {
   windowSize: WindowSize
 }
 
-
 export default function SolarSystemApp(props: SolarSystemAppProps)
 {
   const windowSize = props.windowSize;
-  const pixiAppRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const pixiApp = new PIXI.Application({resizeTo: window});
-    pixiAppRef.current?.appendChild(pixiApp.view);
-    pixiApp.start();
-    return () => {
-      pixiApp.destroy(true, true);
-    }
-  }, [windowSize]);
-
-
+  
   return (
     <>
-      <div id="pixi" ref={pixiAppRef}></div>
+      <Stage width={windowSize.width} height={windowSize.height} options={{ backgroundColor: 0x00000f }}>
+
+      </Stage>
     </>
   )
 }
