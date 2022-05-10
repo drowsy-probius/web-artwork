@@ -14,3 +14,14 @@ ryzen 3600 + rtx 2080 에서의 대략적인 성능 측정
 ![선](./gpu_usage_line.gif)
 
 ![원](./gpu_usage_circle.gif)
+
+
+## 성능 향상 가능한 지점?
+- alpha 끄기
+`context = canvas.getContext('2d', { alpha: false });`
+
+- 배치 캔버스 사용
+코드에서 circle나 line을 그릴 때, 매 요소마다 path 생성하고 채우고를 반복함. 앱 의도는 마우스 자취를 그릴 때 그 선이나 원의 색이 그라데이션을 이뤘으면 해서 매 요소마다 순서대로 그리도록 작성했음.
+
+만약 채우는 색을 하나도 통일하고 한번에 `fill()`이나 `stroke()`를 호출하면 성능이 개선된 것으로 예상됨.
+

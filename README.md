@@ -21,6 +21,7 @@ retina display를 위해서 devicePixelRatio 값으로 canvas.width, canvas.heig
 
 useEffect에서 함수 호출 시에 dependency를 작성하는게 까다롭네 => const로 함수 선언하는데 useCallback 사용해서 해결함.
 
+[기타 최적화 팁](https://developer.mozilla.org/ko/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
 
 
 ## libraries
