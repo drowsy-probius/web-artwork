@@ -176,6 +176,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
 
   const canvasMouseclickListener = useCallback((event: MouseEvent) => {
+    /** 좌클릭만 고려함 */
+    if(event.button !== 0) return;
+
     event.preventDefault();
     event.stopPropagation();
 
@@ -185,6 +188,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     };
     clickPosition.current = pos;
 
+    setTracerLine(!tracerLine);
     console.log(`Cpos: (${pos.x}, ${pos.y})`);
   }, [canvasPosition]);
 
