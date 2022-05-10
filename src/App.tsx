@@ -52,7 +52,7 @@ function App() {
                 <li><Link to='/wave'>wave</Link></li>
                 <li><Link to='/mouseTracker'>mouse tracker</Link></li>
                 <li><Link to='/solarSystem'>solar system (not completed)</Link></li>
-                <li><Link to='/react-pixi-1'>react pixi 1 (not completed)</Link></li>
+                <li><Link to='/react-pixi-1'>react pixi 1</Link></li>
               </ul>
             </div>
 
