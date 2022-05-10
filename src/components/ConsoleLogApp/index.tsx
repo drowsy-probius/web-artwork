@@ -62,7 +62,7 @@ export default function ConsoleLogApp()
 
   return (
     <MobileView>
-      <div style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}} onClick={toggleLogger}>
+      <div className="console-log-app-root" style={{position: 'fixed', left: 0, bottom: '0px', backgroundColor: 'white'}} onClick={toggleLogger}>
         <b>tab here to {isHidden ? "show" : "hide"} messages</b> <br/>
         <div id="console-messages">
           <b>last {LIMIT} console message:</b> <br/><hr/>

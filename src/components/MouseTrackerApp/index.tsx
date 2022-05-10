@@ -29,8 +29,10 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
    * rendering되지 않도록 useState가 아니라 useRef을 사용함. 
    * FIFO queue
    */
-  const MaxRecentPoints = 100;
+  const MaxRecentPoints = 75;
   const TimeLimitRecentPoints = 800;
+  const TimeIntervalRecentPoints = Math.floor(2 * TimeLimitRecentPoints / MaxRecentPoints);
+
   const recentPoints = useRef<RecentPoint[]>([]);
 
   const mousePosition = useRef<Coordinate>({x: -1, y: -1});
@@ -38,7 +40,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const mouseLeft = useRef<Boolean>(false);
   const mouseLeftTime = useRef<number>(-1);
   const trackerColor = useRef<Color>(new Color());
-  trackerColor.current.aa = Math.max(trackerColor.current.aa, 128);
+  trackerColor.current.aa = Math.max(trackerColor.current.aa, 192);
 
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
   const [useBlur, setUseBlur] = useState<Boolean>(false);
@@ -135,6 +137,13 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
 
 
   const addRecentPoint = useCallback( (recentPoint: RecentPoint) => {
+    if(recentPoints.current.length > 0)
+    {
+      const latestPoint = recentPoints.current[recentPoints.current.length - 1];
+      const timeInterval = recentPoint.timestamp - latestPoint.timestamp;
+      if(timeInterval < TimeIntervalRecentPoints) return;
+    }
+
     if(recentPoints.current.length >= MaxRecentPoints)
     {
       recentPoints.current = [...recentPoints.current.slice(1), recentPoint];
@@ -143,7 +152,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     {
       recentPoints.current = [...recentPoints.current, recentPoint];
     }
-  }, []);
+  }, [TimeIntervalRecentPoints]);
 
 
   const canvasMouseenterListener = useCallback((event: MouseEvent) => {
