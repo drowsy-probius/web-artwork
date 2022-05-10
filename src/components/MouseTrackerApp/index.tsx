@@ -40,6 +40,9 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
   const mouseLeft = useRef<Boolean>(false);
   const mouseLeftTime = useRef<number>(-1);
   const trackerColor = useRef<Color>(new Color());
+  trackerColor.current.rgb[0] = Math.max(trackerColor.current.rgb[0], 0x20);
+  trackerColor.current.rgb[1] = Math.max(trackerColor.current.rgb[1], 0x20);
+  trackerColor.current.rgb[2] = Math.max(trackerColor.current.rgb[2], 0x20);
   trackerColor.current.aa = Math.max(trackerColor.current.aa, 192);
 
   const [tracerLine, setTracerLine] = useState<Boolean>(true);
