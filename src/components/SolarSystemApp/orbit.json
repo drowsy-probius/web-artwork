@@ -1,0 +1,92 @@
+{
+  "mercury": {
+    "perihelion": 46.0,
+    "aphelion": 69.8, 
+    "moons": 0,
+    "ring": false,
+    "mass": 0.330,
+    "density": 5429,
+    "diameter": 4879
+  },
+  "venus": {
+    "perihelion": 107.5,
+    "aphelion": 108.9, 
+    "moons": 0,
+    "ring": false,
+    "mass": 4.87,
+    "density": 5243,
+    "diameter": 12104
+  },
+  "earth": {
+    "perihelion": 147.1,
+    "aphelion": 152.1, 
+    "moons": 1,
+    "ring": false,
+    "mass": 5.97,
+    "density": 5514,
+    "diameter": 12756
+  },
+  "moon": {
+    "perihelion": 0.363,
+    "aphelion": 0.406, 
+    "moons": 0,
+    "ring": false,
+    "mass": 0.073,
+    "density": 3340,
+    "diameter": 3475
+  },
+  "mars": {
+    "perihelion": 206.7,
+    "aphelion": 249.3, 
+    "moons": 2,
+    "ring": false,
+    "mass": 0.642,
+    "density": 3934,
+    "diameter": 6792
+  },
+  "jupiter": {
+    "perihelion": 740.6,
+    "aphelion": 816.4, 
+    "moons": 79,
+    "ring": true,
+    "mass": 1898,
+    "density": 1326,
+    "diameter": 142984
+  },
+  "saturn": {
+    "perihelion": 1357.6,
+    "aphelion": 1506.5, 
+    "moons": 82,
+    "ring": true,
+    "mass": 568,
+    "density": 687,
+    "diameter": 120536
+  },
+  "uranus": {
+    "perihelion": 2732.7,
+    "aphelion": 3001.4, 
+    "moons": 27,
+    "ring": true,
+    "mass": 86.8,
+    "density": 1270,
+    "diameter": 51118
+  },
+  "neptune": {
+    "perihelion": 4471.1,
+    "aphelion": 4558.9, 
+    "moons": 14,
+    "ring": true,
+    "mass": 102,
+    "density": 1638,
+    "diameter": 49528
+  },
+  "pluto": {
+    "perihelion": 4436.8,
+    "aphelion": 7375.9, 
+    "moons": 5,
+    "ring": false,
+    "mass": 0.0130,
+    "density": 1850,
+    "diameter": 2376
+  }
+}

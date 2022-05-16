@@ -1,6 +1,22 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { WindowSize } from "../../@types";
-import * as PIXI from 'pixi.js';
+import { getGraphics, getSpriteFromImg, useRenderer, useStage } from '../usePIXI';
+import _orbitData from './orbit.json';
+
+interface orbitDataType
+{
+  [key: string]: {
+    perihelion: number,
+    aphelion: number,
+    moons: number,
+    ring: boolean,
+    mass: number,
+    density: number,
+    diameter: number
+  }
+}
+const orbitData: orbitDataType = _orbitData;
+
 
 interface SolarSystemAppProps
 {
@@ -10,69 +26,83 @@ interface SolarSystemAppProps
 export default function SolarSystemApp(props: SolarSystemAppProps)
 {
   const windowSize = props.windowSize;
-  const prevTime = useRef<number>(Date.now());
   const requestAnimationFrameRef = useRef<number>(-1);
+  const prevTime = useRef<number>(Date.now());
 
-  const renderer = useRef<PIXI.AbstractRenderer>();
-  const stage = useRef<PIXI.Container>();
+  const renderer = useRenderer(windowSize, {
+    backgroundColor: 0xffffff,
+  });
+  const stage = useStage(windowSize);
+  const bunny = getSpriteFromImg('/bunny.png', {
+    anchor: 0.5,
+    position: {
+      x: windowSize.width/2,
+      y: windowSize.height/2
+    },
+    interactive: true,
+    buttonMode: true
+  });
 
-  const bunny: PIXI.Sprite = PIXI.Sprite.from('/bunny.png');
-  
-  const setBunny = useCallback(async () => {
-    if(renderer.current === undefined || renderer.current === null) return;
-    if(stage.current === undefined || stage.current === null) return;
-
-    bunny.anchor.set(0.5);         // sprite의 원점 설정 [0, 1] 
-    bunny.position.set(renderer.current.screen.width/2, renderer.current.screen.height/2);
-    bunny.interactive = true;
-    bunny.buttonMode = true;
-
-    bunny.on('pointerdown', () => {
-      bunny.scale.x *= 1.25;
-      bunny.scale.y *= 1.25;
-    });
-    
-    stage.current.addChild(bunny);
-  }, [bunny]);
-
+  const graphics = getGraphics();
 
   const animate = useCallback(async (timestamp: number) => {
-    if(renderer.current === undefined || renderer.current === null) return;
+    const currentRenderer = renderer.current;
+    const currentStage = stage.current;
+    if(currentRenderer === null || currentStage === null) return;
+
     const curTime = Date.now();
     const deltaTime = curTime - prevTime.current;
     const deltaFrame = deltaTime < 0 ? 0 : deltaTime * 60 / 1000;
 
     bunny.rotation += 0.1 * deltaFrame;
 
-    renderer.current.render(bunny);
+    currentRenderer.render(currentStage);
 
     prevTime.current = curTime;
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
-  }, [bunny]);
-  
+  }, [renderer, stage, bunny]);
 
   useEffect(() => {
-    renderer.current = PIXI.autoDetectRenderer({
-      width: windowSize.width,
-      height: windowSize.height
+    const currentRenderer = renderer.current;
+    const currentStage = stage.current;
+    if(currentRenderer === null || currentStage === null) return;
+
+    bunny.on('pointerup', (event: PointerEvent) => {
+      bunny.scale.x *= 1.25;
+      bunny.scale.y *= 1.25;
+
+      console.log(bunny.width, bunny.height);
     });
-    stage.current = new PIXI.Container();
-    document.getElementById('solar-system-app-root')?.appendChild(renderer.current.view);
 
-    setBunny();
+    
+    const color = 0x000000
+    for(const planetName in orbitData)
+    {
+      graphics.lineStyle(2, color + Math.random()*16581375, 1);
+      const planet = orbitData[planetName];
+      console.log(planet);
+      graphics.drawEllipse(
+        currentRenderer.width/2, 
+        currentRenderer.height/2, 
+        planet.perihelion, 
+        planet.aphelion
+      );
+    }
+    
 
+    currentStage.addChild(graphics);
+    // currentStage.addChild(bunny);
+
+    document.getElementById('solar-system-app-root')?.appendChild(currentRenderer.view);
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     return () => {
-      stage.current?.removeChildren();
-      stage.current?.destroy(true);
-      renderer.current?.destroy(true);
       cancelAnimationFrame(requestAnimationFrameRef.current);
     }
-  }, [windowSize, animate, setBunny]);
+  }, [windowSize, animate, renderer, stage, bunny]);
 
   return (
     <div id="solar-system-app-root">
-      hello?
+
     </div>
   )
 }

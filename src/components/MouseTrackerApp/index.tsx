@@ -188,7 +188,7 @@ export default function MouseTrackerApp(props: MouseTrackerAppProps)
     };
     clickPosition.current = pos;
 
-    setTracerLine(!tracerLine);
+    setTracerLine(tracerLine => !tracerLine);
     console.log(`Cpos: (${pos.x}, ${pos.y})`);
   }, [canvasPosition]);
 

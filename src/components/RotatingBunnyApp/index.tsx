@@ -19,7 +19,7 @@ export default function RotatingBunnyApp(props: RotatingBunnyAppProps)
   }));
   const stage = useRef<PIXI.Container>(new PIXI.Container());
 
-  const bunny: PIXI.Sprite = PIXI.Sprite.from('/bunny.png');
+  const bunny: PIXI.Sprite = PIXI.Sprite.from('https://pixijs.io/examples-v4/examples/assets/bunny.png');
   
   const setBunny = useCallback(async () => {
     if(renderer.current === undefined || renderer.current === null) return;
@@ -59,15 +59,20 @@ export default function RotatingBunnyApp(props: RotatingBunnyAppProps)
   
 
   useEffect(() => {
-    renderer.current.resize(windowSize.width, windowSize.height);
+    // return에서 current 값을 사용하는데
+    // 이게 호출됐을 때의 값과 return에서 참조할 current의 값이
+    // 달라질 수 있기 때문에 이렇게 해야한다.
+    const currentStage = stage.current;  
+    const currentRenderer = renderer.current;
+    currentRenderer.resize(windowSize.width, windowSize.height);
 
     setBunny();
-    document.getElementById('rotating-bunny-app-root')?.appendChild(renderer.current.view);
+    document.getElementById('rotating-bunny-app-root')?.appendChild(currentRenderer.view);
 
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     return () => {
       bunny.removeAllListeners();
-      stage.current.removeChildren();
+      currentStage.removeChildren();
       cancelAnimationFrame(requestAnimationFrameRef.current);
     }
   }, [windowSize, bunny, animate, setBunny]);

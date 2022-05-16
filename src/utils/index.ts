@@ -190,3 +190,9 @@ export function randomColor(alpha: boolean = true)
   return new Color().toString(alpha);
 }
 
+export function ellipseEquation(a: number, b: number, x0: number, y0: number): Function
+{
+  return (x: number): number => {
+    return y0 + b * Math.sqrt(1 - Math.pow((x - x0), 2)/Math.pow(a, 2))
+  }
+}
