@@ -2,19 +2,22 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { WindowSize } from "../../@types";
 import * as PIXI from 'pixi.js';
 
-interface SolarSystemAppProps
+interface RotatingBunnyAppProps
 {
   windowSize: WindowSize
 }
 
-export default function SolarSystemApp(props: SolarSystemAppProps)
+export default function RotatingBunnyApp(props: RotatingBunnyAppProps)
 {
   const windowSize = props.windowSize;
   const prevTime = useRef<number>(Date.now());
   const requestAnimationFrameRef = useRef<number>(-1);
 
-  const renderer = useRef<PIXI.AbstractRenderer>();
-  const stage = useRef<PIXI.Container>();
+  const renderer = useRef<PIXI.AbstractRenderer>(PIXI.autoDetectRenderer({
+    width: windowSize.width,
+    height: windowSize.height
+  }));
+  const stage = useRef<PIXI.Container>(new PIXI.Container());
 
   const bunny: PIXI.Sprite = PIXI.Sprite.from('/bunny.png');
   
@@ -27,9 +30,11 @@ export default function SolarSystemApp(props: SolarSystemAppProps)
     bunny.interactive = true;
     bunny.buttonMode = true;
 
-    bunny.on('pointerdown', () => {
+    bunny.on('pointerup', (event: PointerEvent) => {
       bunny.scale.x *= 1.25;
       bunny.scale.y *= 1.25;
+
+      console.log(bunny.width, bunny.height);
     });
     
     stage.current.addChild(bunny);
@@ -38,13 +43,15 @@ export default function SolarSystemApp(props: SolarSystemAppProps)
 
   const animate = useCallback(async (timestamp: number) => {
     if(renderer.current === undefined || renderer.current === null) return;
+    if(stage.current === undefined || stage.current === null) return;
+    
     const curTime = Date.now();
     const deltaTime = curTime - prevTime.current;
     const deltaFrame = deltaTime < 0 ? 0 : deltaTime * 60 / 1000;
 
     bunny.rotation += 0.1 * deltaFrame;
 
-    renderer.current.render(bunny);
+    renderer.current.render(stage.current);
 
     prevTime.current = curTime;
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
@@ -52,27 +59,21 @@ export default function SolarSystemApp(props: SolarSystemAppProps)
   
 
   useEffect(() => {
-    renderer.current = PIXI.autoDetectRenderer({
-      width: windowSize.width,
-      height: windowSize.height
-    });
-    stage.current = new PIXI.Container();
-    document.getElementById('solar-system-app-root')?.appendChild(renderer.current.view);
+    renderer.current.resize(windowSize.width, windowSize.height);
 
     setBunny();
+    document.getElementById('rotating-bunny-app-root')?.appendChild(renderer.current.view);
 
     requestAnimationFrameRef.current = requestAnimationFrame(animate);
     return () => {
-      stage.current?.removeChildren();
-      stage.current?.destroy(true);
-      renderer.current?.destroy(true);
+      bunny.removeAllListeners();
+      stage.current.removeChildren();
       cancelAnimationFrame(requestAnimationFrameRef.current);
     }
-  }, [windowSize, animate, setBunny]);
+  }, [windowSize, bunny, animate, setBunny]);
 
   return (
-    <div id="solar-system-app-root">
-      hello?
+    <div id="rotating-bunny-app-root">
     </div>
   )
 }

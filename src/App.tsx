@@ -8,7 +8,7 @@ import WaveApp from './components/WaveApp';
 import SolarSystemApp from './components/SolarSystemApp';
 import MouseTrackerApp from './components/MouseTrackerApp';
 import ConsoleLogApp from './components/ConsoleLogApp';
-import ReactPIXIExample1App from './components/ReactPIXIExample1App';
+import RotatingBunnyApp from './components/RotatingBunnyApp';
 
 import './App.scss';
 
@@ -18,7 +18,7 @@ function App() {
     width: document.body.clientWidth,
     height: document.body.clientHeight,
   });
-  const [renderChildren, setRenderChildren] = useState<Boolean>(false);
+  const [renderChildren, setRenderChildren] = useState<Boolean>(true);
 
 
   useEffect(()=>{
@@ -51,8 +51,8 @@ function App() {
                 <li><Link to='/'>home</Link></li>
                 <li><Link to='/wave'>wave</Link></li>
                 <li><Link to='/mouseTracker'>mouse tracker</Link></li>
+                <li><Link to='/rotatingBunny'>rotating bunny</Link></li>
                 <li><Link to='/solarSystem'>solar system (not completed)</Link></li>
-                <li><Link to='/react-pixi-1'>react pixi 1</Link></li>
               </ul>
             </div>
 
@@ -61,8 +61,8 @@ function App() {
                 <Route path='/' element={<RootApp windowSize={windowSize} />}></Route>
                 <Route path='/wave' element={<WaveApp windowSize={windowSize}/>} ></Route>
                 <Route path='/mouseTracker' element={<MouseTrackerApp windowSize={windowSize}/>}></Route>
+                <Route path='/rotatingBunny' element={<RotatingBunnyApp windowSize={windowSize}/>}></Route>
                 <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
-                <Route path='/react-pixi-1' element={<ReactPIXIExample1App windowSize={windowSize}/>}></Route>
               </Routes>
             </div>
           </BrowserRouter>
