@@ -10,7 +10,9 @@ then
   COMMIT_MESSAGE=${MESSAGE_ARRAY[$INDEX]}
 fi
 
+# echo "$COMMIT_MESSAGE"
+
 git config --global credential.helper store
 git add .
-git commit -m $COMMIT_MESSAGE
+git commit -m "$COMMIT_MESSAGE"
 git push
