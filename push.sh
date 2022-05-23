@@ -12,5 +12,5 @@ fi
 
 git config --global credential.helper store
 git add .
-git commit -m ${MESSAGE_ARRAY[$INDEX]}
+git commit -m $COMMIT_MESSAGE
 git push
