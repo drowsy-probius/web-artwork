@@ -25,3 +25,19 @@ export interface Rectangle extends Shape {
   size: Coordinate,
   angle: number,
 }
+
+export interface orbitType
+{
+  perihelion: number,
+  aphelion: number,
+  moons: number,
+  ring: boolean,
+  mass: number,
+  density: number,
+  diameter: number
+}
+
+export interface orbitsDataType
+{
+  [key: string]: orbitType
+}

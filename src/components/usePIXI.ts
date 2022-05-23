@@ -1,6 +1,13 @@
 import { RefObject, useEffect, useRef } from "react";
 import { Coordinate, WindowSize } from "../@types";
+import { IViewportOptions, Viewport } from "pixi-viewport";
 import * as PIXI from 'pixi.js';
+
+
+export function getPIXIApp(): PIXI.Application
+{
+  return new PIXI.Application();
+}
 
 
 /**
@@ -29,6 +36,7 @@ export function useRenderer(windowSize: WindowSize, options?: PIXI.IRendererOpti
 
     return () => {
       curentRenderer.removeAllListeners();
+      
     }
   }, [windowSize]);
 
@@ -58,6 +66,37 @@ export function useStage(windowSize: WindowSize): RefObject<PIXI.Container>
   }, [windowSize]);
 
   return stage;
+}
+
+
+/**
+ *
+ * viewport의 screen크기를 windowSize로 설정하고
+ * 기타 option도 설정함.
+ * windowSize가 변경되면 screen크기를 변경함
+ *
+ * @export
+ * @param {WindowSize} windowSize
+ * @param {IViewportOptions} [options]
+ * @return {*}  {RefObject<Viewport>}
+ */
+export function useViewport(windowSize: WindowSize, options?: IViewportOptions): RefObject<Viewport>
+{
+  const viewport = useRef<Viewport>(new Viewport({
+    screenHeight: windowSize.height,
+    screenWidth: windowSize.width,
+    ...options
+  }));
+
+  useEffect(() => {
+    viewport.current.resize(windowSize.width, windowSize.height);
+
+    return () => {
+      
+    }
+  }, [windowSize]);
+
+  return viewport;
 }
 
 

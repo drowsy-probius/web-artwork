@@ -1,5 +1,10 @@
 import { Coordinate } from "../@types";
 
+interface ColorProps
+{
+  color?: string,
+  useAlpha?: boolean,
+}
 
 export class CoordinateApp {
   coord: Coordinate;
@@ -46,25 +51,38 @@ export class CoordinateApp {
 export class Color
 {
   rgb: number[];
-  aa: number = 0;
+  aa: number = 0xff;
+  useAlpha: boolean = false;
   maxRGB: number = 0; // closed upper bound
   minRGB: number = 0; // closed lower bound
   animateTarget: number = 0; // 0: rr, 1: gg, 2: bb
   animateSign: number = 1; // 1 or -1
 
+
   /**
-   * @param color 
-   * #rrggbbaa or #rrggbb
+   * Creates an instance of Color.
+   * @param {ColorProps} options
+   * options.color: #rrggbbaa or #rrggbb
+   * options.useAlpha: set true when you use random color
+   * @memberof Color
    */
-  constructor(color?: string)
+  constructor(options?: ColorProps)
   {
     this.rgb = [];
-    if(color === undefined)
+    const color = options?.color;
+    const useAlpha = options?.useAlpha;
+
+    if(options === undefined || color === undefined)
     {
-      this.rgb[0] = Math.floor(Math.random() * 256);
-      this.rgb[1] = Math.floor(Math.random() * 256);
-      this.rgb[2] = Math.floor(Math.random() * 256);
-      this.aa = Math.floor(Math.random() * 256);
+      this.rgb[0] = randomInt(256);
+      this.rgb[1] = randomInt(256);
+      this.rgb[2] = randomInt(256);
+
+      if(useAlpha === true)
+      {
+        this.aa = randomInt(256);
+        this.useAlpha = true;
+      }
       this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]);
       this.minRGB = Math.min(this.rgb[0], this.rgb[1], this.rgb[2]);
       if(this.rgb[0] !== this.maxRGB && this.rgb[0] !== this.minRGB) this.animateTarget = 0;
@@ -87,6 +105,7 @@ export class Color
       throw new Error("invalid color format!");
     }
     this.aa = parseInt(color.slice(7, 9), 16);
+    this.useAlpha = true;
     this.maxRGB = Math.max(this.rgb[0], this.rgb[1], this.rgb[2]);
     this.minRGB = Math.min(this.rgb[0], this.rgb[1], this.rgb[2]);
     if(this.rgb[0] !== this.maxRGB && this.rgb[0] !== this.minRGB) this.animateTarget = 0;
@@ -126,14 +145,14 @@ export class Color
 
   }
 
-  toString(alpha: boolean = true)
+  toString()
   {
     let result = "";
     for(let i=0; i<3; i++)
     {
       result += this.rgb[i].toString(16).padStart(2, '0');
     }
-    if(alpha)
+    if(this.useAlpha === true)
     {
       return `#${result}${this.aa.toString(16).padStart(2, '0')}`;
     }
@@ -142,6 +161,11 @@ export class Color
       return `#${result}`;
     }
   }
+}
+
+export function colorToNumber(color: string): number
+{
+  return parseInt(color.slice(1), 16);
 }
 
 /**
@@ -154,6 +178,8 @@ export class Color
  * #rrggbbaa or #rrggbb
  * @param {number} distance
  * how far from colorA: 0 <= p <= 1
+ * @param {boolean} toNumber
+ * if it is set, return value is number not string
  * @return {string} 
  * #rrggbbaa or #rrggbb
  * 
@@ -163,9 +189,9 @@ export function interpolateColor(colorA: string, colorB: string, distance: numbe
   if(distance >= 1) return colorA;
   if(distance <= 0) return colorB;
 
-  const color = new Color('#00000000');
-  const cA = new Color(colorA);
-  const cB = new Color(colorB);
+  const color = new Color({color: '#00000000'});
+  const cA = new Color({color: colorA});
+  const cB = new Color({color: colorB});
 
   color.rgb[0] = Math.round(cB.rgb[0] + distance*(cA.rgb[0] - cB.rgb[0]));
   color.rgb[1] = Math.round(cB.rgb[1] + distance*(cA.rgb[1] - cB.rgb[1]));
@@ -185,14 +211,42 @@ export function isPositionPositive(point: Coordinate)
   return (point.x > 0) && (point.y > 0);
 }
 
-export function randomColor(alpha: boolean = true)
+export function randomColor(useAlpha: boolean = true): string
 {
-  return new Color().toString(alpha);
+  return new Color({useAlpha}).toString();
 }
 
 export function ellipseEquation(a: number, b: number, x0: number, y0: number): Function
 {
   return (x: number): number => {
     return y0 + b * Math.sqrt(1 - Math.pow((x - x0), 2)/Math.pow(a, 2))
+  }
+}
+
+export function randomInt(max: number): number;
+export function randomInt(min: number, max: number): number;
+export function randomInt(n: number, m?: number): number
+{
+  if(m === undefined)
+  {
+    return Math.floor(randomFloat(n));
+  }
+  else
+  {
+    return Math.floor(randomFloat(n, m));
+  }
+}
+
+export function randomFloat(max: number): number;
+export function randomFloat(min: number, max: number): number;
+export function randomFloat(n: number, m?: number): number
+{
+  if(m === undefined)
+  {
+    return Math.random() * n;
+  }
+  else
+  {
+    return n + (Math.random() * (m - n + 1));
   }
 }

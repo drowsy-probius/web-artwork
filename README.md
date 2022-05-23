@@ -29,7 +29,9 @@ useEffect에서 함수 호출 시에 dependency를 작성하는게 까다롭네 
 pure canvas or...
 
 
-for 2D graphics: [PixiJS](https://pixijs.com), [tutorial](https://pixijs.com/tutorials)
+for 2D graphics: [PixiJS](https://pixijs.com), [learningPIXI (old but useful)](https://github.com/kittykatattack/learningPixi), [tutorial](https://pixijs.com/tutorials), [docs](https://pixijs.download/dev/docs/index.html), [pixi-viewport](https://github.com/davidfig/pixi-viewport)
+
+
 
 [react-pixi](https://github.com/inlet/react-pixi) (react 18에서 이슈 있음)
 

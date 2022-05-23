@@ -1,4 +1,13 @@
 {
+  "sun": {
+    "perihelion": 1,
+    "aphelion": 1, 
+    "moons": 0,
+    "ring": false,
+    "mass": 1986816,
+    "density": 1440,
+    "diameter": 139200
+  },
   "mercury": {
     "perihelion": 46.0,
     "aphelion": 69.8, 
