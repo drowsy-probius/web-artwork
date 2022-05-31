@@ -1,13 +1,18 @@
 import { RefObject, useEffect, useRef } from "react";
-import { Coordinate, WindowSize } from "../@types";
-import { IViewportOptions, Viewport } from "pixi-viewport";
+import { WindowSize } from "../types";
+import { Viewport } from "pixi-viewport";
 import * as PIXI from 'pixi.js';
 
 
-export function getPIXIApp(): PIXI.Application
-{
-  return new PIXI.Application();
-}
+export const PIXIApplication  = PIXI.Application;
+export const PIXISprite       = PIXI.Sprite;
+export const PIXIContainer    = PIXI.Container;
+export const PIXIGraphics     = PIXI.Graphics;
+export const PIXIText         = PIXI.Text;
+export const PIXILoader       = PIXI.Loader;
+export const PIXITextStyle    = PIXI.TextStyle;
+export const PIXIViewport     = Viewport;
+
 
 
 /**
@@ -66,84 +71,4 @@ export function useStage(windowSize: WindowSize): RefObject<PIXI.Container>
   }, [windowSize]);
 
   return stage;
-}
-
-
-/**
- *
- * viewport의 screen크기를 windowSize로 설정하고
- * 기타 option도 설정함.
- * windowSize가 변경되면 screen크기를 변경함
- *
- * @export
- * @param {WindowSize} windowSize
- * @param {IViewportOptions} [options]
- * @return {*}  {RefObject<Viewport>}
- */
-export function useViewport(windowSize: WindowSize, options?: IViewportOptions): RefObject<Viewport>
-{
-  const viewport = useRef<Viewport>(new Viewport({
-    screenHeight: windowSize.height,
-    screenWidth: windowSize.width,
-    ...options
-  }));
-
-  useEffect(() => {
-    viewport.current.resize(windowSize.width, windowSize.height);
-
-    return () => {
-      
-    }
-  }, [windowSize]);
-
-  return viewport;
-}
-
-
-interface useSpriteOptions
-{
-  anchor?: Coordinate | number,
-  position?: Coordinate,
-  interactive?: boolean,
-  buttonMode?: boolean,
-}
-
-/**
- * uri(로컬 주소 또는 웹 url)로부터 image를 불러오고
- * options에 맞춰서 해당 sprite의 옵션을 설정함.
- * 리액트 객체는 아님.
- *
- * @export
- * @param {PIXI.SpriteSource} uri
- * @param {useSpriteOptions} [options]
- * @return {*}  {PIXI.Sprite}
- */
-export function getSpriteFromImg(uri: PIXI.SpriteSource, options?: useSpriteOptions): PIXI.Sprite
-{
-  const sprite: PIXI.Sprite = PIXI.Sprite.from(uri);
-
-  if(options !== undefined)
-  {
-    if(options.anchor) 
-    {
-      if(typeof(options.anchor) === "number") sprite.anchor.set(options.anchor);
-      else sprite.anchor.set(options.anchor.x, options.anchor.y);
-    }
-
-    if(options.position) sprite.position.set(
-                            options.position.x,
-                            options.position.y
-                          );
-    if(options.interactive !== undefined) sprite.interactive = options.interactive;
-    if(options.buttonMode !== undefined) sprite.buttonMode = options.buttonMode;
-  }
-
-  return sprite;
-}
-
-export function getGraphics()
-{
-  const graphics = new PIXI.Graphics();
-
-  return graphics;
 }

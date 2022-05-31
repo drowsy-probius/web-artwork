@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useMemo } from 'react';
-import { WindowSize, Coordinate } from '../../@types';
+import { WindowSize, Coordinate } from '../../types';
 import WaveGroup from './WaveGroup';
 import { useCanvas } from '../useCanvas';
 

@@ -1,6 +1,6 @@
 import Wave from "./Wave";
 import Rectangle from "./Rectangle";
-import { Coordinate } from "../../@types";
+import { Coordinate } from "../../types";
 
 export default class WaveRectangle extends Wave
 {

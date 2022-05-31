@@ -28,8 +28,16 @@ export interface Rectangle extends Shape {
 
 export interface orbitType
 {
+  name: string,
   perihelion: number,
   aphelion: number,
+  eccentricity: number,
+  period: number,
+  velocity: number,
+  inclination: number,
+  obliquity: number,
+  temperature: number,
+  rotationPeriod: number,
   moons: number,
   ring: boolean,
   mass: number,

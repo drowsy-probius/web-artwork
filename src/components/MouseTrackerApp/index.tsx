@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import { WindowSize, Coordinate } from "../../@types";
+import { WindowSize, Coordinate } from "../../types";
 import { useCanvas } from "../useCanvas";
 
 import Stats from 'stats.js';

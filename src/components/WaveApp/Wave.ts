@@ -1,5 +1,5 @@
 import Point from "./Point";
-import { Coordinate } from "../../@types";
+import { Coordinate } from "../../types";
 import { CoordinateApp } from "../../utils";
 
 export default class Wave {

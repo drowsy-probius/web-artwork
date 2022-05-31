@@ -1,4 +1,4 @@
-import { Coordinate } from "../../@types";
+import { Coordinate } from "../../types";
 import Wave from "./Wave";
 import WaveRectangle from "./WaveRectangle";
 

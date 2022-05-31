@@ -1,4 +1,4 @@
-import { Coordinate } from "../@types";
+import { Coordinate } from "../types";
 
 interface ColorProps
 {
@@ -211,15 +211,31 @@ export function isPositionPositive(point: Coordinate)
   return (point.x > 0) && (point.y > 0);
 }
 
-export function randomColor(useAlpha: boolean = true): string
+export function randomColorString(useAlpha: boolean = false): string
 {
   return new Color({useAlpha}).toString();
 }
 
+export function randomColorNumber(useAlpha: boolean = false): number
+{
+  return colorToNumber(randomColorString(useAlpha));
+}
+
+/**
+ * 
+ * from: (x-x0)^2/a^2 + (y-y0)^2/b^2 = 1
+ * 
+ * @param a 
+ * @param b 
+ * @param x0 
+ * @param y0 
+ * @returns 
+ */
 export function ellipseEquation(a: number, b: number, x0: number, y0: number): Function
 {
-  return (x: number): number => {
-    return y0 + b * Math.sqrt(1 - Math.pow((x - x0), 2)/Math.pow(a, 2))
+  return function(x: number): number
+  {
+    return y0 + b * Math.sqrt(Math.abs(1 - Math.pow((x - x0), 2))/Math.pow(a, 2))
   }
 }
 

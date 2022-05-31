@@ -4,7 +4,7 @@
  */
 
 import { RefObject, useEffect, useRef } from "react";
-import { WindowSize } from "../@types";
+import { WindowSize } from "../types";
 
 export function useCanvas(windowSize: WindowSize): RefObject<HTMLCanvasElement>
 {

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { WindowSize } from "../../@types";
+import { WindowSize } from "../../types";
 import * as PIXI from 'pixi.js';
 
 interface RotatingBunnyAppProps

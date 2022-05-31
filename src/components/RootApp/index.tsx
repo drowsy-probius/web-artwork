@@ -1,5 +1,5 @@
 import React from "react";
-import { WindowSize } from "../../@types"; 
+import { WindowSize } from "../../types"; 
 
 interface RootAppProps
 {
