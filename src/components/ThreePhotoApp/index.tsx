@@ -176,7 +176,7 @@ export default function ThreePhotoApp(props: any)
         <input 
         type="file" 
         className="buttons"
-        accept='image/jpg,impge/png,image/jpeg'
+        accept='image/*'
         onChange={uploadImageHandler}/>
       }
 
