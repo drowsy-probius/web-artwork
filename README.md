@@ -37,7 +37,7 @@ for 2D graphics: [PixiJS](https://pixijs.com), [learningPIXI (old but useful)](h
 
 
 
-for 3D graphics: [three.js](https://threejs.org)
+for 3D graphics: [three.js](https://threejs.org), [babylon.js](https://www.babylonjs.com/) [pixi3d](https://pixi3d.org/)
 
 [react-three-fiber](https://github.com/pmndrs/react-three-fiber)
 

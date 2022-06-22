@@ -11,6 +11,7 @@ import ConsoleLogApp from './components/ConsoleLogApp';
 import RotatingBunnyApp from './components/RotatingBunnyApp';
 
 import './App.scss';
+import ThreePhotoApp from './components/ThreePhotoApp';
 
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
                 <li><Link to='/mouseTracker'>mouse tracker</Link></li>
                 <li><Link to='/rotatingBunny'>rotating bunny</Link></li>
                 <li><Link to='/solarSystem'>solar system (not completed)</Link></li>
+                <li><Link to='/3dPhoto'>make 3d photo</Link></li>
               </ul>
             </div>
 
@@ -63,6 +65,7 @@ function App() {
                 <Route path='/mouseTracker' element={<MouseTrackerApp windowSize={windowSize}/>}></Route>
                 <Route path='/rotatingBunny' element={<RotatingBunnyApp windowSize={windowSize}/>}></Route>
                 <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
+                <Route path='/3dPhoto' element={<ThreePhotoApp windowSize={windowSize}/>}></Route>
               </Routes>
             </div>
           </BrowserRouter>

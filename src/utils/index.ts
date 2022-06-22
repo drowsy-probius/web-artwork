@@ -163,6 +163,12 @@ export class Color
   }
 }
 
+export function colorFromTemperature(temperature: number): number
+{
+  return 0;
+}
+
+
 export function colorToNumber(color: string): number
 {
   return parseInt(color.slice(1), 16);
