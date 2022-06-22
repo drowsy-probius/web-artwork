@@ -53,7 +53,7 @@ function App() {
                 <li><Link to='/wave'>wave</Link></li>
                 <li><Link to='/mouseTracker'>mouse tracker</Link></li>
                 <li><Link to='/rotatingBunny'>rotating bunny</Link></li>
-                <li><Link to='/solarSystem'>solar system (not completed)</Link></li>
+                {/* <li><Link to='/solarSystem'>solar system (not completed)</Link></li> */}
                 <li><Link to='/3dPhoto'>make 3d photo</Link></li>
               </ul>
             </div>
@@ -64,7 +64,7 @@ function App() {
                 <Route path='/wave' element={<WaveApp windowSize={windowSize}/>} ></Route>
                 <Route path='/mouseTracker' element={<MouseTrackerApp windowSize={windowSize}/>}></Route>
                 <Route path='/rotatingBunny' element={<RotatingBunnyApp windowSize={windowSize}/>}></Route>
-                <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route>
+                {/* <Route path='/solarSystem' element={<SolarSystemApp windowSize={windowSize}/>}></Route> */}
                 <Route path='/3dPhoto' element={<ThreePhotoApp windowSize={windowSize}/>}></Route>
               </Routes>
             </div>
