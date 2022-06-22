@@ -11,6 +11,7 @@ export const PIXIGraphics     = PIXI.Graphics;
 export const PIXIText         = PIXI.Text;
 export const PIXILoader       = PIXI.Loader;
 export const PIXITextStyle    = PIXI.TextStyle;
+export const PIXIFilters      = PIXI.filters;
 export const PIXIViewport     = Viewport;
 
 

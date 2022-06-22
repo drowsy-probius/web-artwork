@@ -59,9 +59,9 @@ body {
   width: 100%;
   background-color: dimgrey;
 
-  #upload {
+  .buttons {
     position: absolute;
-    top: 10em;
+    top: 5em;
     background-color: aliceblue;
 
     z-index: 100;
@@ -84,9 +84,9 @@ body {
       // pointer-events: none;
     }
 
-    #depthMapCanvas
+    #maskingCanvas
     {
-      background-color: #ffbbccda;
+      background-color: #aabbff80;
       position: absolute;
       z-index: 50;
     }
