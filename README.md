@@ -4,10 +4,6 @@
 
 상단에 메뉴있음.
 
-- [Wave static page](https://k123s456h.github.io/web-artwork/wave)
-
-javascript로만 작성한 wave 페이지. 업데이트 안함
-
 
 ### TODO
 
